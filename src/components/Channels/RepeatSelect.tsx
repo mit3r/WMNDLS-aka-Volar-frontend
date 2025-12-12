@@ -5,7 +5,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
 export default function RepeatSelect(props: { channelId: Pc.Channel }) {
-  const repeat = useStore(effectStore, (state) => state.effects[props.channelId].repeat);
+  const repeat = useStore(effectStore, (state) => state.configs[props.channelId].repeat);
   const moveRepeat = useStore(effectStore, (state) => state.moveRepeat);
   const [direction, setDirection] = useState<boolean>(true);
   const block = useRef<boolean>(false);

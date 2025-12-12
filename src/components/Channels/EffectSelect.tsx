@@ -7,7 +7,7 @@ import { useStore } from "zustand";
 export default function EffectSelect(props: { channelId: Pc.Channel }) {
   const setTab = useStore(globalStore, (state) => state.setTab);
   const setEditChannel = useStore(globalStore, (state) => state.setEditChannel);
-  const effect = useStore(effectStore, (state) => state.effects[props.channelId]);
+  const effect = useStore(effectStore, (state) => state.configs[props.channelId]);
 
   const handleClick = useCallback(() => {
     setEditChannel(props.channelId);

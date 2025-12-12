@@ -19,7 +19,7 @@ export default function GradientDisplay(props: { channelId: Pc.Channel }) {
 
   const background = useMemo(
     () =>
-      `linear-gradient(0deg, ${gradient
+      `linear-gradient(180deg, ${gradient
         .map((stop, i) => `${stop.color.toHexString()} ${((i * 100) / (length - 1)).toFixed(2)}%`)
         .join(", ")})`,
     [gradient, length],

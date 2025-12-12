@@ -1,5 +1,12 @@
 import { CRGB } from "@api/Transmitter";
-import { BreathingFrameRequest } from "./Breathing";
+import { BreathingEffect } from "./Breathing";
+import { SolidEffect } from "./Solid";
+import { FlashingEffect } from "./Flashing";
+import { ShootingEffect } from "./Shooting";
+import { ClimbingEffect } from "./Climbing";
+import { WaveEffect } from "./Wave";
+import { StrobeEffect } from "./Strobe";
+import { PulseEffect } from "./Pulse";
 
 enum EffectType {
   Solid, // (solid color)
@@ -29,7 +36,7 @@ enum EffectRepeat {
 
 type EffectSpeed = 0.5 | 1 | 2 | 3 | 10; // 0.5x, 1x, 2x, 3x, 10x
 
-interface Effect {
+interface EffectConfig {
   type: EffectType;
   speed: EffectSpeed;
   repeat: EffectRepeat;
@@ -37,30 +44,34 @@ interface Effect {
   // switchProgress: number; // progress when switching effects
   // lastType: EffectType; // to remember last type when switching
   // lastSpeed: EffectSpeed; // to remember last speed when switching
-
-  // instanceProgresses: number[]; // each effect instance can have its own progress
 }
 
-type EffectFrameFunc = (index: number, color: CRGB, offset: number) => CRGB;
-const EffectsFrameFunctions: { [key in EffectType]: EffectFrameFunc } = {
-  [EffectType.Breathing]: BreathingFrameRequest,
-  [EffectType.Solid]: () => new CRGB(0, 0, 0),
-  [EffectType.Flashing]: () => new CRGB(0, 0, 0),
-  [EffectType.Climbing]: () => new CRGB(0, 0, 0),
-  [EffectType.Shooting]: () => new CRGB(0, 0, 0),
-  [EffectType.Falling]: () => new CRGB(0, 0, 0),
-  [EffectType.Wave]: () => new CRGB(0, 0, 0),
-  [EffectType.Strobe]: () => new CRGB(0, 0, 0),
-  [EffectType.Pulse]: () => new CRGB(0, 0, 0),
-  [EffectType.Sparkle]: () => new CRGB(0, 0, 0),
-  [EffectType.Confetti]: () => new CRGB(0, 0, 0),
-  [EffectType.Glitter]: () => new CRGB(0, 0, 0),
-  [EffectType.Twinkle]: () => new CRGB(0, 0, 0),
-  [EffectType.Meteor]: () => new CRGB(0, 0, 0),
-  [EffectType.Lightning]: () => new CRGB(0, 0, 0),
-  [EffectType.Rain]: () => new CRGB(0, 0, 0),
-  [EffectType.Fire]: () => new CRGB(0, 0, 0),
-  [EffectType.Music]: () => new CRGB(0, 0, 0),
+interface Effect {
+  basePeriod: number; // in seconds
+  requestFrame: (index: number, color: CRGB, offset: number) => CRGB;
+}
+
+const effectsInstances: Record<EffectType, Effect> = {
+  [EffectType.Breathing]: BreathingEffect,
+  [EffectType.Solid]: SolidEffect,
+  [EffectType.Flashing]: FlashingEffect,
+  [EffectType.Climbing]: ClimbingEffect,
+  [EffectType.Shooting]: ShootingEffect,
+  [EffectType.Falling]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Wave]: WaveEffect, // TODO
+  [EffectType.Strobe]: StrobeEffect,
+  [EffectType.Pulse]: PulseEffect,
+  [EffectType.Sparkle]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Confetti]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Glitter]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Twinkle]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Meteor]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Lightning]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Rain]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Fire]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Music]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
 };
 
-export { type Effect, EffectType, EffectRepeat, type EffectSpeed, EffectsFrameFunctions };
+export type { Effect, EffectConfig, EffectSpeed };
+export { EffectType, EffectRepeat, effectsInstances };
+

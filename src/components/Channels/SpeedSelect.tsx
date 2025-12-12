@@ -5,7 +5,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
 export default function SpeedSelect(props: { channelId: Pc.Channel }) {
-  const speed = useStore(effectStore, (state) => state.effects[props.channelId].speed);
+  const speed = useStore(effectStore, (state) => state.configs[props.channelId].speed);
   const moveSpeed = useStore(effectStore, (state) => state.moveSpeed);
 
   const [direction, setDirection] = useState<boolean>(true);

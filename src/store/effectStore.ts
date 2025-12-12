@@ -1,13 +1,13 @@
+import { EffectRepeat, EffectType, type EffectConfig } from "@api/Animator/effect";
 import type { Pc } from "@api/Transmitter";
 import mod from "@utils/mod";
 import { createStore } from "zustand";
 import { globalStore } from "./globalStore";
-import { type Effect, EffectRepeat, EffectType } from "@api/Animator/effect";
+import { progressStore } from "./progressStore";
+import { produce } from "immer";
 
 interface EffectStore {
-  effects: { [key in Pc.Channel]: Effect };
-
-  setProgress: (id: Pc.Channel, progress: number) => void;
+  configs: { [key in Pc.Channel]: EffectConfig };
 
   setType: (effectType: EffectType) => void;
   moveSpeed: (id: Pc.Channel, offset: -1 | 1) => void;
@@ -15,44 +15,39 @@ interface EffectStore {
 }
 
 export const effectStore = createStore<EffectStore>()((set) => ({
-  effects: {
-    0: { type: EffectType.Solid, speed: 1, repeat: 0, progress: 0 },
-    1: { type: EffectType.Solid, speed: 1, repeat: 0, progress: 0 },
-    2: { type: EffectType.Solid, speed: 1, repeat: 0, progress: 0 },
-    3: { type: EffectType.Solid, speed: 1, repeat: 0, progress: 0 },
-    255: { type: EffectType.Solid, speed: 1, repeat: 0, progress: 0 },
+  configs: {
+    0: { type: EffectType.Solid, speed: 1, repeat: 0 },
+    1: { type: EffectType.Solid, speed: 1, repeat: 0 },
+    2: { type: EffectType.Solid, speed: 1, repeat: 0 },
+    3: { type: EffectType.Solid, speed: 1, repeat: 0 },
+    255: { type: EffectType.Solid, speed: 1, repeat: 0 },
   },
 
-  setProgress: (id, progress) =>
-    set((state) => {
-      const updatedEffect = { ...state.effects[id], progress };
-      return { ...state, effects: { ...state.effects, [id]: updatedEffect } };
-    }),
-
   setType: (effectType) =>
-    set((state) => {
+    set(produce((state) => {
       const channel = globalStore.getState().editChannel as Pc.Channel;
       if (channel === null) return state;
+      progressStore.getState().resetProgress(channel);
 
-      const updatedEffect = { ...state.effects[channel], type: effectType, progress: 0 };
-      return { ...state, effects: { ...state.effects, [channel]: updatedEffect } };
-    }),
+      state.configs[channel].type = effectType;
+    })),
   moveSpeed: (id, offset) =>
-    set((state) => {
-      const currentSpeed = state.effects[id].speed;
-      const speedOptions: Effect["speed"][] = [0.5, 1, 2, 3, 10];
+    set(produce((state: EffectStore) => {
+      const currentSpeed = state.configs[id].speed;
+      const speedOptions: EffectConfig["speed"][] = [0.5, 1, 2, 3, 10];
       const currentIndex = speedOptions.indexOf(currentSpeed);
       const nextIndex = mod(currentIndex + offset, speedOptions.length);
-      const updatedEffect = { ...state.effects[id], speed: speedOptions[nextIndex], progress: 0 };
-      return { ...state, effects: { ...state.effects, [id]: updatedEffect } };
-    }),
+      state.configs[id].speed = speedOptions[nextIndex];
+      progressStore.getState().resetProgress(id);
+    })),
   moveRepeat: (id, offset) =>
-    set((state) => {
-      const currentRepeat = state.effects[id].repeat;
+    set(produce((state: EffectStore) => {
+      const currentRepeat = state.configs[id].repeat;
       const repeatOptions: EffectRepeat[] = [EffectRepeat.NO_REPEAT, EffectRepeat.DO_FOREVER];
       const currentIndex = repeatOptions.indexOf(currentRepeat);
       const nextIndex = mod(currentIndex + offset, repeatOptions.length);
-      const updatedEffect = { ...state.effects[id], repeat: repeatOptions[nextIndex], progress: 0 };
-      return { ...state, effects: { ...state.effects, [id]: updatedEffect } };
-    }),
+
+      state.configs[id].repeat = repeatOptions[nextIndex];
+      progressStore.getState().resetProgress(id);
+    })),
 }));

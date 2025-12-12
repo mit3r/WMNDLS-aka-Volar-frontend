@@ -2,6 +2,7 @@ import type { Gradient } from "@api/Animator/gradient";
 import { CRGB, type Pc } from "@api/Transmitter";
 import { createStore } from "zustand";
 import { globalStore } from "./globalStore";
+import { produce } from "immer";
 
 interface GradientStore {
   gradients: { [key in Pc.Channel]: Gradient };
@@ -21,36 +22,32 @@ export const gradientStore = createStore<GradientStore>()((set) => ({
     255: [{ id: 0, color: new CRGB(0, 0, 0) }],
   },
   updateGradientStop: (id, color) =>
-    set((state) => {
+    set(produce((state: GradientStore) => {
       const channel = globalStore.getState().editChannel as Pc.Channel;
       if (channel === null) return state;
 
-      const updatedGradient = state.gradients[channel].map((stop) => (stop.id === id ? { ...stop, color } : stop));
-      return { ...state, gradients: { ...state.gradients, [channel]: updatedGradient } };
-    }),
+      state.gradients[channel] = state.gradients[channel].map((stop) => (stop.id === id ? { ...stop, color } : stop));
+    })),
   addGradientStop: () =>
-    set((state) => {
+    set(produce((state: GradientStore) => {
       const channel = globalStore.getState().editChannel as Pc.Channel;
       if (channel === null) return state;
 
       const newStopId = Math.max(...state.gradients[channel].map((stop) => stop.id)) + 1;
-      const newStop = { id: newStopId, color: new CRGB(0, 0, 0) };
-      const updatedGradient = [...state.gradients[channel], newStop];
-      return { ...state, gradients: { ...state.gradients, [channel]: updatedGradient } };
-    }),
+      state.gradients[channel].push({ id: newStopId, color: new CRGB(0, 0, 0) })
+    })),
 
   removeGradientStop: (id) =>
-    set((state) => {
+    set(produce((state: GradientStore) => {
       const channel = globalStore.getState().editChannel as Pc.Channel;
       if (channel === null) return state;
 
-      const updatedGradient = state.gradients[channel].filter((stop) => stop.id !== id);
-      return { ...state, gradients: { ...state.gradients, [channel]: updatedGradient } };
-    }),
+      state.gradients[channel] = state.gradients[channel].filter((stop) => stop.id !== id)
+    })),
   setGradient: (gradient) =>
-    set((state) => {
+    set(produce((state: GradientStore) => {
       const channel = globalStore.getState().editChannel as Pc.Channel;
       if (channel === null) return state;
-      return { ...state, gradients: { ...state.gradients, [channel]: gradient } };
-    }),
+      state.gradients[channel] = gradient;
+    })),
 }));

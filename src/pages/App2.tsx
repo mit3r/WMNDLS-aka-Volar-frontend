@@ -30,9 +30,9 @@ function App() {
 
     const cols = colors.current;
     for (let i = 0; i < Pc.NUM_LEDS; i++) {
-      cols[i].red = red;
-      cols[i].green = green;
-      cols[i].blue = blue;
+      cols[i]._red = red;
+      cols[i]._green = green;
+      cols[i]._blue = blue;
     }
 
     // console.log(cols);
@@ -66,13 +66,13 @@ function App() {
 
       for (let i = 0; i < Pc.NUM_LEDS; i++) {
         if (i === idx) {
-          colors.current[i].red = red;
-          colors.current[i].green = green;
-          colors.current[i].blue = blue;
+          colors.current[i]._red = red;
+          colors.current[i]._green = green;
+          colors.current[i]._blue = blue;
         } else {
-          colors.current[i].red = 0;
-          colors.current[i].green = 0;
-          colors.current[i].blue = 0;
+          colors.current[i]._red = 0;
+          colors.current[i]._green = 0;
+          colors.current[i]._blue = 0;
         }
       }
 

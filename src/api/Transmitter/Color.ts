@@ -1,22 +1,78 @@
 export class CRGB {
-  constructor(public red: number = 0, public green: number = 0, public blue: number = 0) {}
+  constructor(
+    private _red: number = 0,
+    private _green: number = 0,
+    private _blue: number = 0,
+  ) {
+    this.red = _red;
+    this.green = _green;
+    this.blue = _blue;
+  }
+
+  set red(value: number) {
+    this._red = Math.max(0, Math.min(255, Math.round(value)));
+  }
+
+  set green(value: number) {
+    this._green = Math.max(0, Math.min(255, Math.round(value)));
+  }
+
+  set blue(value: number) {
+    this._blue = Math.max(0, Math.min(255, Math.round(value)));
+  }
+
+  get red(): number {
+    return this._red;
+  }
+
+  get green(): number {
+    return this._green;
+  }
+
+  get blue(): number {
+    return this._blue;
+  }
+
+  set r(value: number) {
+    this.red = value;
+  }
+
+  set g(value: number) {
+    this.green = value;
+  }
+
+  set b(value: number) {
+    this.blue = value;
+  }
+
+  get r(): number {
+    return this._red;
+  }
+
+  get g(): number {
+    return this._green;
+  }
+
+  get b(): number {
+    return this._blue;
+  }
 
   get RGB24(): Uint8Array {
-    return new Uint8Array([this.red, this.green, this.blue]);
+    return new Uint8Array([this._red, this._green, this._blue]);
   }
 
   get RGB16(): Uint8Array {
-    const r = (this.red >> 3) & 0x1f;
-    const g = (this.green >> 2) & 0x3f;
-    const b = (this.blue >> 3) & 0x1f;
+    const r = (this._red >> 3) & 0x1f;
+    const g = (this._green >> 2) & 0x3f;
+    const b = (this._blue >> 3) & 0x1f;
     const value = (r << 11) | (g << 5) | b;
     return new Uint8Array([value & 0xff, value >> 8]);
   }
 
   get RGB8(): Uint8Array {
-    const r = (this.red >> 5) & 0x07;
-    const g = (this.green >> 5) & 0x07;
-    const b = (this.blue >> 6) & 0x03;
+    const r = (this._red >> 5) & 0x07;
+    const g = (this._green >> 5) & 0x07;
+    const b = (this._blue >> 6) & 0x03;
     return new Uint8Array([(r << 5) | (g << 2) | b]);
   }
 
@@ -27,9 +83,9 @@ export class CRGB {
   }
 
   toHexString(): string {
-    const r = this.red.toString(16).padStart(2, "0");
-    const g = this.green.toString(16).padStart(2, "0");
-    const b = this.blue.toString(16).padStart(2, "0");
+    const r = this._red.toString(16).padStart(2, "0");
+    const g = this._green.toString(16).padStart(2, "0");
+    const b = this._blue.toString(16).padStart(2, "0");
     return `#${r}${g}${b}`;
   }
   static fromHexString(str: string): CRGB {
@@ -37,5 +93,13 @@ export class CRGB {
     if (hex.length !== 3) throw new Error("Invalid hex color string");
 
     return new CRGB(...hex.map((c) => parseInt(c, 16)));
+  }
+
+  static blend(a: CRGB, b: CRGB): CRGB {
+    return new CRGB(
+      (a.red + b.red) >> 1,
+      (a.green + b.green) >> 1,
+      (a.blue + b.blue) >> 1,
+    );
   }
 }

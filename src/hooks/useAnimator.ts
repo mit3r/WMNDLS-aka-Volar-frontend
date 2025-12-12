@@ -1,18 +1,19 @@
 import { MAX_FPS_LIMIT } from "@api/Animator";
-import { EffectRepeat, EffectsFrameFunctions } from "@api/Animator/effect";
+import { effectsInstances } from "@api/Animator/effect";
 import { getColorFromGradient } from "@api/Animator/gradient";
-import { Message, Pc, transmitter, type CRGB } from "@api/Transmitter";
+import { CRGB, Message, Pc, transmitter } from "@api/Transmitter";
+import { useTransmitter } from "@hooks/useTransmitter";
 import { effectStore } from "@store/effectStore";
 import { gradientStore } from "@store/gradientStore";
 import { optionsStore } from "@store/optionsStore";
+import { progressStore } from "@store/progressStore";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "zustand";
-import { useTransmitter } from "@hooks/useTransmitter";
 
 export default function useAnimator() {
   const { status } = useTransmitter();
   const gradients = useStore(gradientStore, (state) => state.gradients);
-  const effects = useStore(effectStore, (state) => state.effects);
+  const effectsConfigs = useStore(effectStore, (state) => state.configs);
   const options = useStore(optionsStore, (state) => state.options);
 
   const millis = useMemo(
@@ -20,36 +21,36 @@ export default function useAnimator() {
     [options.rgbFormat, options.multicastChannelsNum],
   );
 
-  const period = 10; // 10 seconds
-  const periodStartTimestamp = useRef<number>(0);
+  const lastFrameTimestamp = useRef<number>(0);
 
   const handleFrame = useCallback(() => {
     const timestamp = Date.now();
-    const periodOffset = (timestamp - periodStartTimestamp.current) / (1000 * period); // in [0,1]
-    if (periodOffset >= 1) periodStartTimestamp.current = timestamp;
-
-    // TODO: include pushes
-
-    // Get all channels which want to update at this frame (repeat !== 0)
+    const elapsedTime = (timestamp - lastFrameTimestamp.current) / 1000; // in seconds
+    lastFrameTimestamp.current = timestamp;
 
     const queue: { id: Pc.Channel; colors: CRGB[] }[] = [];
 
-    for (let i = 0; i < options.multicastChannelsNum; i++) {
-      const effect = effects[i as Pc.Channel];
+    for (let channelId = 0; channelId < options.multicastChannelsNum; channelId++) {
+      const effectConfig = effectsConfigs[channelId as Pc.Channel];
+      const effect = effectsInstances[effectConfig.type];
+      const colors: CRGB[] = [...new Array<CRGB>(Pc.NUM_LEDS).fill(new CRGB(0, 0, 0))];
 
-      // skip if no repeat
-      if (effect.repeat === EffectRepeat.NO_REPEAT) continue;
+      progressStore.getState().moveProgress(channelId as Pc.Channel, elapsedTime / effect.basePeriod);
 
-      // compute colors for each LED
-      const colors: CRGB[] = [];
-      for (let l = 0; l < Pc.NUM_LEDS; l++) {
-        const color = getColorFromGradient(gradients[i as Pc.Channel], l / Pc.NUM_LEDS);
-        const final = EffectsFrameFunctions[effect.type](l, color, periodOffset);
-        colors.push(final);
+      // for each instance
+      for (const progress of progressStore.getState().progresses[channelId as Pc.Channel]) {
+        // generate colors for all LEDs
+        for (let ledIndex = 0; ledIndex < Pc.NUM_LEDS; ledIndex++) {
+          const ledOffset = ledIndex / Pc.NUM_LEDS;
+
+          let color = getColorFromGradient(ledOffset, gradients[channelId as Pc.Channel]);
+          color = effect.requestFrame(ledOffset, color, progress);
+
+          colors[ledIndex] = CRGB.blend(colors[ledIndex], color)
+        }
       }
-
-      // enqueue channel update
-      queue.push({ id: i as Pc.Channel, colors });
+        // enqueue channel update
+        queue.push({ id: channelId as Pc.Channel, colors });
     }
 
     // transmit all updates
@@ -66,7 +67,7 @@ export default function useAnimator() {
 
       transmitter.sendMessage(msg);
     }
-  }, [effects, gradients, options.multicastChannelsNum, options.rgbFormat]);
+  }, [effectsConfigs, gradients, options.multicastChannelsNum, options.rgbFormat]);
 
   useEffect(() => {
     if (status !== "connected") return console.warn("Transmitter not connected");

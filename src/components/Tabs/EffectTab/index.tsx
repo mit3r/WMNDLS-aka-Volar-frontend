@@ -7,7 +7,7 @@ import { useStore } from "zustand";
 
 export default function EffectTab() {
   const channelId = useStore(globalStore, (state) => state.editChannel);
-  const editEffect = useStore(effectStore, (state) => (channelId === null ? null : state.effects[channelId]));
+  const editEffect = useStore(effectStore, (state) => (channelId === null ? null : state.configs[channelId]));
   const setEffectType = useStore(effectStore, (state) => state.setType);
 
   return (
@@ -16,7 +16,7 @@ export default function EffectTab() {
         .filter((value) => isNaN(value as number))
         .map((key) => (
           <button
-            onClick={() => setEffectType(key as EffectType)}
+            onClick={() => setEffectType(EffectType[key as keyof typeof EffectType])}
             className={twMerge(
               clsx("grid aspect-square place-content-center rounded-2xl border-2 bg-white transition-all select-none", {
                 "brightness-50": editEffect?.type === key,
