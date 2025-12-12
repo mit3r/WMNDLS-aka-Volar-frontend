@@ -1,24 +1,32 @@
 export class CRGB {
+  private limit(value: number): number {
+    return Math.max(0, Math.min(255, Math.round(value)));
+  }
+
+  private _red: number = 0;
+  private _green: number = 0;
+  private _blue: number = 0;
+
   constructor(
-    private _red: number = 0,
-    private _green: number = 0,
-    private _blue: number = 0,
+    r: number = 0,
+    g: number = 0,
+    b: number = 0,
   ) {
-    this.red = _red;
-    this.green = _green;
-    this.blue = _blue;
+    this.red = this.limit(r);
+    this.green = this.limit(g);
+    this.blue = this.limit(b);
   }
 
   set red(value: number) {
-    this._red = Math.max(0, Math.min(255, Math.round(value)));
+    this._red = this.limit(value);
   }
 
   set green(value: number) {
-    this._green = Math.max(0, Math.min(255, Math.round(value)));
+    this._green = this.limit(value);
   }
 
   set blue(value: number) {
-    this._blue = Math.max(0, Math.min(255, Math.round(value)));
+    this._blue = this.limit(value);
   }
 
   get red(): number {

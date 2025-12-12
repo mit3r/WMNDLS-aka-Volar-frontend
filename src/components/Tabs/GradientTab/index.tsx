@@ -1,15 +1,15 @@
+import { visualStore } from "@store/visualStore";
 import { useStore } from "zustand";
 import Composer from "./Composer";
-import { globalStore } from "@store/globalStore";
 
 export default function GradientTab() {
-  const editChannel = useStore(globalStore, (state) => state.editChannel);
+  const editableVisualId = useStore(visualStore, (state) => state.editableVisualId);
 
   return (
     <div className="p-4">
       {/* <Palete /> */}
 
-      {editChannel !== null && <Composer channelId={editChannel} />}
+      {editableVisualId !== null && <Composer visualId={editableVisualId} />}
     </div>
   );
 }

@@ -1,12 +1,12 @@
-import type { Pc } from "@api/Transmitter";
-import { effectStore } from "@store/effectStore";
+import { visualStore } from "@store/visualStore";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
-export default function RepeatSelect(props: { channelId: Pc.Channel }) {
-  const repeat = useStore(effectStore, (state) => state.configs[props.channelId].repeat);
-  const moveRepeat = useStore(effectStore, (state) => state.moveRepeat);
+export default function RepeatSelect(props: { visualId: number }) {
+  const repeat = useStore(visualStore, (state) => state.visuals[props.visualId].effect.repeat);
+  const moveRepeat = useStore(visualStore, (state) => state.moveRepeat);
+
   const [direction, setDirection] = useState<boolean>(true);
   const block = useRef<boolean>(false);
   const initial = useMemo(() => ({ opacity: 1, x: direction ? 50 : -50, rotate: direction ? 90 : -90 }), [direction]);
@@ -17,16 +17,16 @@ export default function RepeatSelect(props: { channelId: Pc.Channel }) {
     block.current = true;
 
     setDirection(false);
-    moveRepeat(props.channelId, -1);
-  }, [moveRepeat, props.channelId, setDirection, block]);
+    moveRepeat(props.visualId, -1);
+  }, [moveRepeat, props.visualId, setDirection, block]);
 
   const handleNextRepeat = useCallback(() => {
     if (block.current) return;
     block.current = true;
 
     setDirection(true);
-    moveRepeat(props.channelId, 1);
-  }, [moveRepeat, props.channelId, setDirection, block]);
+    moveRepeat(props.visualId, 1);
+  }, [moveRepeat, props.visualId, setDirection, block]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => (e.shiftKey ? handlePrevRepeat() : handleNextRepeat()),

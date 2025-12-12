@@ -1,13 +1,13 @@
 import type { Stop } from "@api/Animator/gradient";
-import { CRGB, type Pc } from "@api/Transmitter";
-import { gradientStore } from "@store/gradientStore";
+import { CRGB } from "@api/Transmitter";
+import { visualStore } from "@store/visualStore";
 import { AnimatePresence, motion, Reorder } from "motion/react";
 import { useStore } from "zustand";
 
-export default function Composer(props: { channelId: Pc.Channel }) {
-  const gradient = useStore(gradientStore, (state) => state.gradients[props.channelId]);
-  const setGradient = useStore(gradientStore, (state) => state.setGradient);
-  const addGradientStop = useStore(gradientStore, (state) => state.addGradientStop);
+export default function Composer(props: { visualId: number }) {
+  const gradient = useStore(visualStore, (state) => state.visuals[props.visualId].gradient);
+  const setGradient = useStore(visualStore, (state) => state.setGradient);
+  const addGradientStop = useStore(visualStore, (state) => state.addGradientStop);
 
   // TODO: Height issue when 'remove' button disappears
 
@@ -48,8 +48,8 @@ export default function Composer(props: { channelId: Pc.Channel }) {
 }
 
 function StopComponent(props: { index: number; stop: Stop; canRemove?: boolean }) {
-  const updateGradientStop = useStore(gradientStore, (state) => state.updateGradientStop);
-  const removeGradientStop = useStore(gradientStore, (state) => state.removeGradientStop);
+  const updateGradientStop = useStore(visualStore, (state) => state.updateGradientStop);
+  const removeGradientStop = useStore(visualStore, (state) => state.removeGradientStop);
   const handleRemove = () => removeGradientStop(props.stop.id);
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     updateGradientStop(props.stop.id, CRGB.fromHexString(e.target.value));

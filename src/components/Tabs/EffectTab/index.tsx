@@ -1,14 +1,12 @@
 import { EffectType } from "@api/Animator/effect";
-import { effectStore } from "@store/effectStore";
-import { globalStore } from "@store/globalStore";
+import { visualStore } from "@store/visualStore";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
 
-export default function EffectTab() {
-  const channelId = useStore(globalStore, (state) => state.editChannel);
-  const editEffect = useStore(effectStore, (state) => (channelId === null ? null : state.configs[channelId]));
-  const setEffectType = useStore(effectStore, (state) => state.setType);
+export default function EffectTab() {  
+  const editEffect = useStore(visualStore, (state) => state.editableVisualId ? state.visuals[state.editableVisualId].effect : null);
+  const setEffectType = useStore(visualStore, (state) => state.setEffectType);
 
   return (
     <div className="grid h-full grid-cols-3 gap-6 overflow-y-auto py-2 pr-4 pl-2">

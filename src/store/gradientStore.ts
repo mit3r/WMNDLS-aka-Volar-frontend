@@ -13,7 +13,7 @@ interface GradientStore {
   setGradient: (gradient: Gradient) => void;
 }
 
-export const gradientStore = createStore<GradientStore>()((set) => ({
+const gradientStore = createStore<GradientStore>()((set) => ({
   gradients: {
     0: [{ id: 0, color: new CRGB(0, 0, 0) }],
     1: [{ id: 0, color: new CRGB(0, 0, 0) }],

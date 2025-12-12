@@ -1,12 +1,11 @@
-import type { Pc } from "@api/Transmitter";
-import { effectStore } from "@store/effectStore";
+import { visualStore } from "@store/visualStore";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
-export default function SpeedSelect(props: { channelId: Pc.Channel }) {
-  const speed = useStore(effectStore, (state) => state.configs[props.channelId].speed);
-  const moveSpeed = useStore(effectStore, (state) => state.moveSpeed);
+export default function SpeedSelect(props: { visualId: number }) {
+  const speed = useStore(visualStore, (state) => state.visuals[props.visualId].effect.speed);
+  const moveSpeed = useStore(visualStore, (state) => state.moveSpeed);
 
   const [direction, setDirection] = useState<boolean>(true);
   const block = useRef<boolean>(false);
@@ -19,16 +18,16 @@ export default function SpeedSelect(props: { channelId: Pc.Channel }) {
     block.current = true;
 
     setDirection(true);
-    moveSpeed(props.channelId, 1);
-  }, [moveSpeed, props.channelId]);
+    moveSpeed(props.visualId, 1);
+  }, [moveSpeed, props.visualId]);
 
   const handlePrevSpeed = useCallback(() => {
     if (block.current) return;
     block.current = true;
 
     setDirection(false);
-    moveSpeed(props.channelId, -1);
-  }, [moveSpeed, props.channelId]);
+    moveSpeed(props.visualId, -1);
+  }, [moveSpeed, props.visualId]);
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => (e.deltaY > 0 ? handlePrevSpeed() : handleNextSpeed()),

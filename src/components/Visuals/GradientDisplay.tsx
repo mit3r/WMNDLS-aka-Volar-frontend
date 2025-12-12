@@ -1,20 +1,19 @@
-import type { Pc } from "@api/Transmitter";
 import { globalStore } from "@store/globalStore";
-import { gradientStore } from "@store/gradientStore";
+import { visualStore } from "@store/visualStore";
 import { motion } from "motion/react";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 
-export default function GradientDisplay(props: { channelId: Pc.Channel }) {
+export default function GradientDisplay(props: { visualId: number }) {
   const setTab = useStore(globalStore, (state) => state.setTab);
-  const setEditChannel = useStore(globalStore, (state) => state.setEditChannel);
+  const setEditableVisualId = useStore(visualStore, (state) => state.setEditableVisualId);
 
   const handleClick = useCallback(() => {
-    setEditChannel(props.channelId);
+    setEditableVisualId(props.visualId);
     setTab("color");
-  }, [setEditChannel, setTab, props.channelId]);
+  }, [setEditableVisualId, setTab, props.visualId]);
 
-  const gradient = useStore(gradientStore, (state) => state.gradients[props.channelId]);
+  const gradient = useStore(visualStore, (state) => state.visuals[props.visualId].gradient);
   const length = useMemo(() => (gradient.length <= 1 ? 2 : gradient.length), [gradient]);
 
   const background = useMemo(
