@@ -5,7 +5,7 @@ import { AnimatePresence, motion, Reorder } from "motion/react";
 import { useStore } from "zustand";
 
 export default function Composer(props: { visualId: number }) {
-  const gradient = useStore(visualStore, (state) => state.visuals[props.visualId].gradient);
+  const gradient = useStore(visualStore, (state) => state.gradients[props.visualId]);
   const setGradient = useStore(visualStore, (state) => state.setGradient);
   const addGradientStop = useStore(visualStore, (state) => state.addGradientStop);
 

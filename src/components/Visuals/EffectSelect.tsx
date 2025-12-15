@@ -6,7 +6,7 @@ import { useStore } from "zustand";
 export default function EffectSelect(props: { visualId: number }) {
   const setTab = useStore(globalStore, (state) => state.setTab);
   const setEditableVisualId = useStore(visualStore, (state) => state.setEditableVisualId);
-  const effect = useStore(visualStore, (state) => state.visuals[props.visualId].effect);
+  const effect = useStore(visualStore, (state) => state.effects[props.visualId]);
 
   const handleClick = useCallback(() => {
     setEditableVisualId(props.visualId);

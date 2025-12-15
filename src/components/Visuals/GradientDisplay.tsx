@@ -13,7 +13,7 @@ export default function GradientDisplay(props: { visualId: number }) {
     setTab("color");
   }, [setEditableVisualId, setTab, props.visualId]);
 
-  const gradient = useStore(visualStore, (state) => state.visuals[props.visualId].gradient);
+  const gradient = useStore(visualStore, (state) => state.gradients[props.visualId]);
   const length = useMemo(() => (gradient.length <= 1 ? 2 : gradient.length), [gradient]);
 
   const background = useMemo(

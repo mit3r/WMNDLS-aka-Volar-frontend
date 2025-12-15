@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
 export default function RepeatSelect(props: { visualId: number }) {
-  const repeat = useStore(visualStore, (state) => state.visuals[props.visualId].effect.repeat);
+  const repeat = useStore(visualStore, (state) => state.effects[props.visualId].repeat);
   const moveRepeat = useStore(visualStore, (state) => state.moveRepeat);
 
   const [direction, setDirection] = useState<boolean>(true);

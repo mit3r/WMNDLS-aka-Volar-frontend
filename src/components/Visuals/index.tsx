@@ -14,17 +14,19 @@ export default function Visuals() {
   const addVisual = useStore(visualStore, (state) => state.addVisual);
 
   const visualElements = useMemo(() => {
-    return visuals.map(({id}) => <Visual key={id} visualId={id} />);
+    return visuals.map((id) => <Visual key={id} visualId={id} />);
   }, [visuals]);
 
 
   return (
-    <div className="grid grid-cols-4 w-full h-svh overflow-y-auto">{visualElements}
+    <div className="grid grid-cols-2 lg:grid-cols-4 w-full h-svh overflow-y-auto">{visualElements}
     <div className="h-[50svh] p-2 grid place-content-center">
       <motion.button
         className="rounded-2xl border-2 border-white px-8 py-2 text-white"
       onClick={addVisual}
-      >Add Visual</motion.button>
+        >
+          Add Visual
+        </motion.button>
     </div>
     </div>
   );

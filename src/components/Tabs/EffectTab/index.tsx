@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
 
 export default function EffectTab() {  
-  const editEffect = useStore(visualStore, (state) => state.editableVisualId ? state.visuals[state.editableVisualId].effect : null);
+  const editEffect = useStore(visualStore, (state) => state.editableVisualId ? state.effects[state.editableVisualId] : null);
   const setEffectType = useStore(visualStore, (state) => state.setEffectType);
 
   return (

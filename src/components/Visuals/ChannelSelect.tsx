@@ -17,10 +17,11 @@ export default function ChannelSelect(props: { visualId: number }) {
     <select name="channel-id" id="channel-id" className="w-full bg-gray-700 rounded-lg p-2"
       onChange={handleChange}
     >
-      <option value={0}>Channel 1</option>
-      <option value={1}>Channel 2</option>
-      <option value={2}>Channel 3</option>
-      <option value={3}>Channel 4</option>
+      {Array.from({ length: Pc.MAX_CHANNELS }, (_, i) => i).map((i) => (
+        <option key={i} value={i}>
+          Channel {i + 1}
+        </option>
+      ))}
       <option value={Pc.BROADCAST_CHANNEL}>Broadcast</option>
       <option value={-1}>Remove Visual</option>
     </select>

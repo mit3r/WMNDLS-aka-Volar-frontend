@@ -1,32 +1,27 @@
-import { EffectRepeat, type EffectConfig, type EffectType } from "@api/Animator/effect";
+import { EffectRepeat, EffectType, type EffectConfig } from "@api/Animator/effect";
 import type { Gradient } from "@api/Animator/gradient";
 import { CRGB, type Pc } from "@api/Transmitter";
 import mod from "@utils/mod";
 import { produce } from "immer";
 import { createStore } from "zustand";
 
-
-export interface Visual {
-  id: number;
-  channelId: Pc.Channel;
-  gradient: Gradient;
-  progresses: number[];
-  effect: EffectConfig;
-}
-
 interface VisualStore {
   editableVisualId: number | null;
-  visuals: Visual[]
+  visuals: number[];
+  channels: Pc.Channel[];
+  gradients: Gradient[];
+  effects: EffectConfig[];
+  progresses: number[][];
 
   // Channel management
   setChannel: (visualId: number, channelId: Pc.Channel) => void;
 
   // Visuals management
-  setEditableVisualId: (id: number | null) => void;
-  setVisuals: (visuals: Visual[]) => void;
+  setEditableVisualId: (visualId: number | null) => void;
+  setVisuals: (visuals: number[]) => void;
   addVisual: () => void;
-  removeVisual: (id: number) => void;
-  
+  removeVisual: (visualId: number) => void;
+
   // Gradient management
   updateGradientStop: (stopId: number, color: CRGB) => void;
   addGradientStop: () => void;
@@ -35,6 +30,7 @@ interface VisualStore {
 
   // Effect management
   setEffectType: (effectType: EffectType) => void;
+  setEffectRepeat: (repeat: EffectRepeat) => void;
   moveSpeed: (visualId: number, offset: -1 | 1) => void;
   moveRepeat: (visualId: number, offset: -1 | 1) => void;
 
@@ -46,108 +42,171 @@ interface VisualStore {
 
 export const visualStore = createStore<VisualStore>((set) => ({
   editableVisualId: null,
-  visuals: [{
-    id: 0, channelId: 0, gradient: [{id: 0, color: new CRGB(0, 0, 0)}], progresses: [0], effect: { type: 0, speed: 1, repeat: 0 }
-  }],
+  visuals: [0],
+  channels: [0],
+  gradients: [[{ id: 0, color: new CRGB(0, 0, 0) }]],
+  effects: [{ type: EffectType.Solid, speed: 1, repeat: EffectRepeat.NO_REPEAT }],
+  progresses: [[0]],
 
   // Channel management
   setChannel: (visualId, channelId) =>
-    set(produce((state: VisualStore) => {
-      state.visuals[visualId].channelId = channelId;
-    })),
+    set(
+      produce((state: VisualStore) => {
+        state.channels[visualId] = channelId;
+      }),
+    ),
 
   // Visuals management
   setEditableVisualId: (id) => set({ editableVisualId: id }),
   setVisuals: (visuals) =>
-    set((produce((state: VisualStore) => {
-      state.visuals = visuals;
-    }))),
+    set(
+      produce((state: VisualStore) => {
+        state.visuals = visuals;
+
+        // Reorder channels, gradients, effects accordingly
+        state.channels = visuals.map((v) => state.channels[v] || 0);
+        state.gradients = visuals.map((v) => state.gradients[v] || [{ id: 0, color: new CRGB(0, 0, 0) }]);
+        state.effects = visuals.map((v) => state.effects[v] || 0);
+        state.progresses = visuals.map((v) => state.progresses[v] || [0]);
+      }),
+    ),
   addVisual: () =>
-    set((produce((state: VisualStore) => {
-      const newId = state.visuals.length > 0 ? Math.max(...state.visuals.map((v) => v.id)) + 1 : 0;
-      state.visuals.push({ id: newId, channelId: 0, gradient: [{id: 0, color: new CRGB(0, 0, 0)}], progresses: [0], effect: { type: 0, speed: 1, repeat: 0 } });
-    }))),
-  removeVisual: (id) =>
-    set((produce((state: VisualStore) => {
-      state.visuals = state.visuals.filter((v) => v.id !== id);
-      if (state.editableVisualId === id) state.editableVisualId = null;
-    }))),
+    set(
+      produce((state: VisualStore) => {
+        const newId = state.visuals.length > 0 ? Math.max(...state.visuals) + 1 : 0;
+        state.visuals.push(newId);
+        state.channels.push(0);
+        state.gradients.push([{ id: 0, color: new CRGB(0, 0, 0) }]);
+        state.effects.push({
+          type: EffectType.Solid,
+          speed: 1,
+          repeat: EffectRepeat.NO_REPEAT,
+        });
+        state.progresses.push([0]);
+      }),
+    ),
+  removeVisual: (visualId) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === visualId) state.editableVisualId = null;
+        state.visuals = state.visuals.filter((v) => v !== visualId);
+        state.channels.splice(visualId, 1);
+        state.gradients.splice(visualId, 1);
+        state.effects.splice(visualId, 1);
+        state.progresses.splice(visualId, 1);
+      }),
+    ),
 
   // Gradient management
-    updateGradientStop: (id, color) =>
-        set(produce((state: VisualStore) => {
-          if(state.editableVisualId === null) return state;
-          for (let i = 0; i < state.visuals[state.editableVisualId].gradient.length; i++) {
-            if (state.visuals[state.editableVisualId].gradient[i].id === id) {
-              state.visuals[state.editableVisualId].gradient[i].color = color;
-              break;
-            }
+  updateGradientStop: (id, color) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === null) return state;
+        for (let i = 0; i < state.gradients[state.editableVisualId].length; i++) {
+          if (state.gradients[state.editableVisualId][i].id === id) {
+            state.gradients[state.editableVisualId][i].color = color;
+            break;
           }
-        })),
-      addGradientStop: () =>
-        set(produce((state: VisualStore) => {
-          if(state.editableVisualId === null) return state;
-    
-          const newStopId = Math.max(...state.visuals[state.editableVisualId].gradient.map((stop) => stop.id)) + 1;
-          state.visuals[state.editableVisualId].gradient.push({ id: newStopId, color: new CRGB(0, 0, 0) })
-        })),
-    
-      removeGradientStop: (id) =>
-        set(produce((state: VisualStore) => {
-          if(state.editableVisualId === null) return state;
-          state.visuals[state.editableVisualId].gradient = state.visuals[state.editableVisualId].gradient.filter((stop) => stop.id !== id)
-        })),
-      setGradient: (gradient) =>
-        set(produce((state: VisualStore) => {
-          if(state.editableVisualId === null) return state;
-          state.visuals[state.editableVisualId].gradient = gradient;
-        })),
-      
-       setEffectType: ( effectType) =>
-    set(produce((state: VisualStore) => {
-      if(state.editableVisualId === null) return state;
-      state.visuals[state.editableVisualId].progresses = [0];
-      state.visuals[state.editableVisualId].effect.type = effectType;
-    })),
-  moveSpeed: (id, offset) =>
-    set(produce((state: VisualStore) => {
-      const currentSpeed = state.visuals[id].effect.speed;
-      const speedOptions: EffectConfig["speed"][] = [0.5, 1, 2, 3, 10];
-      const currentIndex = speedOptions.indexOf(currentSpeed);
-      const nextIndex = mod(currentIndex + offset, speedOptions.length);
-      state.visuals[id].effect.speed = speedOptions[nextIndex];
-      state.visuals[id].progresses = [0];
-    })),
-  moveRepeat: (id, offset) =>
-    set(produce((state: VisualStore) => {
-      const currentRepeat = state.visuals[id].effect.repeat;
-      const repeatOptions: EffectRepeat[] = [EffectRepeat.NO_REPEAT, EffectRepeat.DO_FOREVER];
-      const currentIndex = repeatOptions.indexOf(currentRepeat);
-      const nextIndex = mod(currentIndex + offset, repeatOptions.length);
+        }
+      }),
+    ),
+  addGradientStop: () =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === null) return state;
 
-      state.visuals[id].effect.repeat = repeatOptions[nextIndex];
-      state.visuals[id].progresses = [0];
-    })),
-    
+        const newStopId = Math.max(...state.gradients[state.editableVisualId].map((stop) => stop.id)) + 1;
+        state.gradients[state.editableVisualId].push({
+          id: newStopId,
+          color: new CRGB(0, 0, 0),
+        });
+      }),
+    ),
+
+  removeGradientStop: (id) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === null) return state;
+        state.gradients[state.editableVisualId] = state.gradients[state.editableVisualId].filter(
+          (stop) => stop.id !== id,
+        );
+      }),
+    ),
+  setGradient: (gradient) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === null) return state;
+        state.gradients[state.editableVisualId] = gradient;
+      }),
+    ),
+
+  setEffectType: (effectType) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === null) return state;
+        state.progresses[state.editableVisualId] = [0];
+        state.effects[state.editableVisualId].type = effectType;
+      }),
+    ),
+
+  setEffectRepeat: (repeat) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.editableVisualId === null) return state;
+        state.progresses[state.editableVisualId] = [0];
+        state.effects[state.editableVisualId].repeat = repeat;
+      }),
+    ),
+
+  moveSpeed: (id, offset) =>
+    set(
+      produce((state: VisualStore) => {
+        const currentSpeed = state.effects[id].speed;
+        const speedOptions: EffectConfig["speed"][] = [0.5, 1, 2, 3, 10];
+        const currentIndex = speedOptions.indexOf(currentSpeed);
+        const nextIndex = mod(currentIndex + offset, speedOptions.length);
+        state.effects[id].speed = speedOptions[nextIndex];
+        state.progresses[id] = [0];
+      }),
+    ),
+  moveRepeat: (id, offset) =>
+    set(
+      produce((state: VisualStore) => {
+        const currentRepeat = state.effects[id].repeat;
+        const repeatOptions: EffectRepeat[] = [EffectRepeat.NO_REPEAT, EffectRepeat.DO_FOREVER];
+        const currentIndex = repeatOptions.indexOf(currentRepeat);
+        const nextIndex = mod(currentIndex + offset, repeatOptions.length);
+
+        state.effects[id].repeat = repeatOptions[nextIndex];
+        state.progresses[id] = [0];
+      }),
+    ),
+
   // Progress management
   pushProgress: (visualId: number) =>
-      set(produce((state: VisualStore) => {
-          state.visuals[visualId].progresses.push(0);  
-      })),
-  
-    moveProgress: (visualId: number, offset: number) =>
-      set(produce((state: VisualStore) => {
-        
-        if (state.visuals[visualId].effect.repeat === EffectRepeat.DO_FOREVER)  
-          state.visuals[visualId].progresses[0] = mod(state.visuals[visualId].progresses[0] + offset, 1);
-        
-  
-        for(let i = 1; i < state.visuals[visualId].progresses.length; i++) 
-          state.visuals[visualId].progresses[i] = (state.visuals[visualId].progresses[i] + offset);
-  
-        state.visuals[visualId].progresses = state.visuals[visualId].progresses.filter((p, i) => i === 0 || p < 1);
-      })),
-      
-    resetProgress: (visualId: number) =>
-      set(produce((state: VisualStore) => { state.visuals[visualId].progresses = [0] })),
+    set(
+      produce((state: VisualStore) => {
+        state.progresses[visualId].push(0);
+      }),
+    ),
+
+  moveProgress: (visualId: number, offset: number) =>
+    set(
+      produce((state: VisualStore) => {
+        if (state.effects[visualId].repeat === EffectRepeat.DO_FOREVER)
+          state.progresses[visualId][0] = mod(state.progresses[visualId][0] + offset, 1);
+
+        for (let i = 1; i < state.progresses[visualId].length; i++)
+          state.progresses[visualId][i] = state.progresses[visualId][i] + offset;
+
+        state.progresses[visualId] = state.progresses[visualId].filter((p, i) => i === 0 || p < 1);
+      }),
+    ),
+
+  resetProgress: (visualId: number) =>
+    set(
+      produce((state: VisualStore) => {
+        state.progresses[visualId] = [0];
+      }),
+    ),
 }));

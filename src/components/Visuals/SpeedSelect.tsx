@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
 export default function SpeedSelect(props: { visualId: number }) {
-  const speed = useStore(visualStore, (state) => state.visuals[props.visualId].effect.speed);
+  const speed = useStore(visualStore, (state) => state.effects[props.visualId].speed);
   const moveSpeed = useStore(visualStore, (state) => state.moveSpeed);
 
   const [direction, setDirection] = useState<boolean>(true);

@@ -32,6 +32,7 @@ enum EffectType {
 enum EffectRepeat {
   NO_REPEAT, // play only on push
   DO_FOREVER, // loop until stopped
+  RUN_ONCE, // play once then stop
 }
 
 type EffectSpeed = 0.5 | 1 | 2 | 3 | 10; // 0.5x, 1x, 2x, 3x, 10x

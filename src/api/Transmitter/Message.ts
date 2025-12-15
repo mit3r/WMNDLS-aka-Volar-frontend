@@ -59,8 +59,7 @@ export default class Message {
   }
 
   private set bChannels(id: Pc.Channel) {
-    const newChannels: number = id === Pc.BROADCAST_CHANNEL ? Pc.BROADCAST_CHANNEL : 1 << id;
-    this.view.setUint8(Pc.HeaderOffsets.channels, this.bChannels | newChannels);
+    this.view.setUint8(Pc.HeaderOffsets.channels, this.bChannels | ((id === Pc.BROADCAST_CHANNEL) ? Pc.BROADCAST_CHANNEL : 1 << id));
   }
 
   /** Get list of unicast channels set in bChannels bitmask(less significant bit first) */
