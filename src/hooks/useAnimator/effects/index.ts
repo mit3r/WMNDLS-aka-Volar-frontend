@@ -8,7 +8,7 @@ import { WaveEffect } from "./Wave";
 import { StrobeEffect } from "./Strobe";
 import { PulseEffect } from "./Pulse";
 
-enum EffectType {
+export enum EffectType {
   Solid, // (solid color)
   Breathing, // (color fades in and out)
   Flashing, // (color fills strip and then goes off)
@@ -29,30 +29,12 @@ enum EffectType {
   Music, // (reacts to music input)
 }
 
-enum EffectRepeat {
-  NO_REPEAT, // play only on push
-  DO_FOREVER, // loop until stopped
-  RUN_ONCE, // play once then stop
+export class EffectClass {
+  static basePeriod: number = 1; // in seconds
+  static requestFrame: (index: number, color: CRGB, offset: number) => CRGB = () => new CRGB(0, 0, 0);
 }
 
-type EffectSpeed = 0.5 | 1 | 2 | 3 | 10; // 0.5x, 1x, 2x, 3x, 10x
-
-interface EffectConfig {
-  type: EffectType;
-  speed: EffectSpeed;
-  repeat: EffectRepeat;
-
-  // switchProgress: number; // progress when switching effects
-  // lastType: EffectType; // to remember last type when switching
-  // lastSpeed: EffectSpeed; // to remember last speed when switching
-}
-
-interface Effect {
-  basePeriod: number; // in seconds
-  requestFrame: (index: number, color: CRGB, offset: number) => CRGB;
-}
-
-const effectsInstances: Record<EffectType, Effect> = {
+export const effectsInstances: Record<EffectType, EffectClass> = {
   [EffectType.Breathing]: BreathingEffect,
   [EffectType.Solid]: SolidEffect,
   [EffectType.Flashing]: FlashingEffect,
@@ -72,7 +54,3 @@ const effectsInstances: Record<EffectType, Effect> = {
   [EffectType.Fire]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
   [EffectType.Music]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
 };
-
-export type { Effect, EffectConfig, EffectSpeed };
-export { EffectType, EffectRepeat, effectsInstances };
-

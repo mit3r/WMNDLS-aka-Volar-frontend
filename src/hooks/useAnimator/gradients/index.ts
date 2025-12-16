@@ -8,7 +8,6 @@ export type Stop = {
 export type Gradient = Stop[];
 
 /**
- *
  * @param ledOffset position from 0 to 1
  * @param gradient list of color stops
  */

@@ -1,15 +1,9 @@
-import { visualStore } from "@store/visualStore";
 import { useStore } from "zustand";
 import Composer from "./Composer";
+import { animeStore } from "@store/animeStore";
 
 export default function GradientTab() {
-  const editableVisualId = useStore(visualStore, (state) => state.editableVisualId);
+  const editableVisualId = useStore(animeStore, (state) => state.editableVisualId);
 
-  return (
-    <div className="p-4">
-      {/* <Palete /> */}
-
-      {editableVisualId !== null && <Composer visualId={editableVisualId} />}
-    </div>
-  );
+  return <div className="p-4">{editableVisualId !== null && <Composer visualId={editableVisualId} />}</div>;
 }

@@ -1,4 +1,4 @@
-import { globalStore, tabs, type Tab } from "@store/globalStore";
+import { uiStore, tabs, type Tab } from "@store/uiStore";
 import mod from "@utils/mod";
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo } from "react";
@@ -8,9 +8,9 @@ import EffectTab from "./EffectTab";
 import GradientTab from "./GradientTab";
 import TabAddress from "./AddressTab";
 
-export default function Tabs() {
-  const tab = useStore(globalStore, (state) => state.tab);
-  const setTab = useStore(globalStore, (state) => state.setTab);
+export default function TabsComponent() {
+  const tab = useStore(uiStore, (state) => state.tab);
+  const setTab = useStore(uiStore, (state) => state.setTab);
 
   const TabComponent = useMemo(() => {
     switch (tab) {

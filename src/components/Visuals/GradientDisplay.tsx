@@ -1,26 +1,34 @@
-import { globalStore } from "@store/globalStore";
-import { visualStore } from "@store/visualStore";
+import { animeStore } from "@store/animeStore";
+import { uiStore } from "@store/uiStore";
 import { motion } from "motion/react";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
+import { useShallow } from "zustand/shallow";
 
-export default function GradientDisplay(props: { visualId: number }) {
-  const setTab = useStore(globalStore, (state) => state.setTab);
-  const setEditableVisualId = useStore(visualStore, (state) => state.setEditableVisualId);
+export default function GradientDisplay(props: { groupId: number; visualId: number }) {
+  const setTab = useStore(uiStore, (state) => state.setTab);
+  const handleClick = useCallback(() => setTab("color"), [setTab]);
 
-  const handleClick = useCallback(() => {
-    setEditableVisualId(props.visualId);
-    setTab("color");
-  }, [setEditableVisualId, setTab, props.visualId]);
+  const gradient = useStore(
+    animeStore,
+    useShallow((state) => {
+      const group = state.groups.find((g) => g.id === props.groupId);
+      if (!group) return undefined;
+      const visual = group.visuals.find((v) => v.id === props.visualId);
+      if (!visual) return undefined;
+      return visual.gradient;
+    }),
+  );
 
-  const gradient = useStore(visualStore, (state) => state.gradients[props.visualId]);
-  const length = useMemo(() => (gradient.length <= 1 ? 2 : gradient.length), [gradient]);
+  const length = useMemo(() => (!gradient || gradient.length <= 1 ? 2 : gradient.length), [gradient]);
 
   const background = useMemo(
     () =>
-      `linear-gradient(180deg, ${gradient
-        .map((stop, i) => `${stop.color.toHexString()} ${((i * 100) / (length - 1)).toFixed(2)}%`)
-        .join(", ")})`,
+      gradient === undefined
+        ? "linear-gradient(180deg, #000000 0%, #000000 100%)"
+        : `linear-gradient(180deg, ${gradient
+            .map((stop, i) => `${stop.color.toHexString()} ${((i * 100) / (length - 1)).toFixed(2)}%`)
+            .join(", ")})`,
     [gradient, length],
   );
 

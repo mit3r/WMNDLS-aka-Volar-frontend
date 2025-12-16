@@ -1,57 +1,76 @@
-import { visualStore } from "@store/visualStore";
-import { useMemo } from "react";
+import { animeStore } from "@store/animeStore";
+import { motion, Reorder } from "motion/react";
 import { useStore } from "zustand";
-import ChannelSelect from "./ChannelSelect";
 import GradientDisplay from "./GradientDisplay";
-import RepeatSelect from "./RepeatSelect";
-import SpeedSelect from "./SpeedSelect";
+import RemoveButton from "./RemoveButton";
+import ChainingSelector from "./ChainingSelector";
+import { useShallow } from "zustand/shallow";
+import DurationInput from "./DurationInput";
 import EffectSelect from "./EffectSelect";
-import PushButton from "./PushButton";
-import { motion } from "motion/react";
 
-export default function Visuals() {
-  const visuals = useStore(visualStore, (state) => state.visuals);
-  const addVisual = useStore(visualStore, (state) => state.addVisual);
+export default function Visuals(props: { groupId: number }) {
+  const visuals = useStore(animeStore, (state) => state.groups.find((g) => g.id === props.groupId)?.visuals || []);
 
-  const visualElements = useMemo(() => {
-    return visuals.map((id) => <Visual key={id} visualId={id} />);
-  }, [visuals]);
+  const visualsOrder = useStore(
+    animeStore,
+    useShallow((state) => state.getVisualsOrder()),
+  );
 
+  const setVisualsOrder = useStore(animeStore, (state) => state.setVisualsOrder);
+  const addVisual = useStore(animeStore, (state) => state.addVisual);
+
+  const handleScroll = (e: React.WheelEvent) =>
+    e.currentTarget.scrollBy({ left: Math.sign(e.deltaY) * -100, behavior: "smooth" });
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 w-full h-svh overflow-y-auto">{visualElements}
-    <div className="h-[50svh] p-2 grid place-content-center">
+    <Reorder.Group
+      axis="x"
+      values={visualsOrder}
+      onReorder={setVisualsOrder}
+      className="flex h-full flex-row items-center gap-4 overflow-x-auto"
+      onWheel={handleScroll}
+    >
+      {visuals.map((visual) => (
+        <Visual key={visual.id} groupId={props.groupId} visualId={visual.id} />
+      ))}
+
       <motion.button
-        className="rounded-2xl border-2 border-white px-8 py-2 text-white"
-      onClick={addVisual}
-        >
-          Add Visual
-        </motion.button>
-    </div>
-    </div>
+        className="aspect-square shrink-0 rounded-2xl border-2 border-white p-2 text-white"
+        onClick={addVisual}
+      >
+        Add
+      </motion.button>
+    </Reorder.Group>
   );
 }
 
-function Visual(props: { visualId: number }) {
+function Visual(props: { groupId: number; visualId: number }) {
+  const setEditableVisualId = useStore(animeStore, (state) => state.setEditableVisualId);
+  const handleCapture = () => setEditableVisualId(props.visualId);
+
+  const setVisualDuration = useStore(animeStore, (state) => state.setVisualDuration);
+  const duration = useStore(animeStore, (state) => {
+    const group = state.groups.find((g) => g.id === props.groupId);
+    const visual = group?.visuals.find((v) => v.id === props.visualId);
+    return visual?.duration || 0;
+  });
+
   return (
-    <div className="h-[50svh] p-2">
-      <div className="relative gap-2 overflow-clip rounded-tl-4xl rounded-br-4xl bg-gray-800 p-4 text-white grid grid-cols-2">
-        <div className="col-span-2 row-span-1">
-          <ChannelSelect visualId={props.visualId} />
-        </div>
-        <div className="col-span-1 row-span-3">
-          <GradientDisplay visualId={props.visualId} />
-        </div>
-          <RepeatSelect visualId={props.visualId} />
-          <SpeedSelect visualId={props.visualId} />
-          <EffectSelect visualId={props.visualId} />
-        
-          <div className="col-span-2">
-            <PushButton visualId={props.visualId} />
-          </div>
-        
-        </div>
-    </div>
-     
+    <Reorder.Item
+      drag="x"
+      value={props.visualId}
+      key={props.visualId}
+      className="grid aspect-1/2 h-full grid-flow-col grid-cols-2 grid-rows-4 gap-1 rounded-2xl bg-gray-700 p-1 text-white"
+      onClickCapture={handleCapture}
+    >
+      <div className="row-span-4">
+        <GradientDisplay groupId={props.groupId} visualId={props.visualId} />
+      </div>
+
+      <RemoveButton groupId={props.groupId} visualId={props.visualId} />
+      <EffectSelect groupId={props.groupId} visualId={props.visualId} />
+      <DurationInput value={duration} onChange={setVisualDuration} />
+      <ChainingSelector groupId={props.groupId} visualId={props.visualId} />
+    </Reorder.Item>
   );
 }

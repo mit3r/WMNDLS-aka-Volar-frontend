@@ -1,41 +1,50 @@
-import { visualStore } from "@store/visualStore";
+import { RepeatMode } from "@hooks/useAnimator/visuals";
+import { animeStore } from "@store/animeStore";
+import mod from "@utils/mod";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 
-export default function SpeedSelect(props: { visualId: number }) {
-  const speed = useStore(visualStore, (state) => state.effects[props.visualId].speed);
-  const moveSpeed = useStore(visualStore, (state) => state.moveSpeed);
+export default function RepeatSelect(props: { groupId: number }) {
+  const repeat = useStore(animeStore, (state) => state.groups.find((g) => g.id === props.groupId)?.mode);
+  const setGroupMode = useStore(animeStore, (state) => state.setGroupMode);
+
+  const moveRepeat = useCallback(
+    (offset: number) => {
+      setGroupMode(mod((repeat ?? 1) + offset, RepeatMode.length));
+    },
+    [setGroupMode, repeat],
+  );
 
   const [direction, setDirection] = useState<boolean>(true);
   const block = useRef<boolean>(false);
-
   const initial = useMemo(() => ({ opacity: 1, x: direction ? 50 : -50, rotate: direction ? 90 : -90 }), [direction]);
   const exit = useMemo(() => ({ opacity: 0, x: direction ? -50 : 50, rotate: direction ? -90 : 90 }), [direction]);
 
-  const handleNextSpeed = useCallback(() => {
-    if (block.current) return;
-    block.current = true;
-
-    setDirection(true);
-    moveSpeed(props.visualId, 1);
-  }, [moveSpeed, props.visualId]);
-
-  const handlePrevSpeed = useCallback(() => {
+  const handlePrevRepeat = useCallback(() => {
     if (block.current) return;
     block.current = true;
 
     setDirection(false);
-    moveSpeed(props.visualId, -1);
-  }, [moveSpeed, props.visualId]);
+    moveRepeat(-1);
+  }, [moveRepeat, setDirection, block]);
+
+  const handleNextRepeat = useCallback(() => {
+    if (block.current) return;
+    block.current = true;
+
+    setDirection(true);
+    moveRepeat(1);
+  }, [moveRepeat, setDirection, block]);
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => (e.shiftKey ? handlePrevRepeat() : handleNextRepeat()),
+    [handlePrevRepeat, handleNextRepeat],
+  );
 
   const handleWheel = useCallback(
-    (e: React.WheelEvent) => (e.deltaY > 0 ? handlePrevSpeed() : handleNextSpeed()),
-    [handlePrevSpeed, handleNextSpeed],
-  );
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => (e.shiftKey ? handlePrevSpeed() : handleNextSpeed()),
-    [handleNextSpeed, handlePrevSpeed],
+    (e: React.WheelEvent) => (e.deltaY > 0 ? handlePrevRepeat() : handleNextRepeat()),
+    [handlePrevRepeat, handleNextRepeat],
   );
 
   return (
@@ -51,10 +60,10 @@ export default function SpeedSelect(props: { visualId: number }) {
           initial={initial}
           animate={{ opacity: 1, x: 0, rotate: 0 }}
           exit={exit}
-          key={speed}
+          key={repeat}
           className="col-start-1 col-end-1 row-start-1 row-end-1 grid w-full origin-bottom place-items-center p-4 font-mono text-2xl font-bold text-black"
         >
-          {speed}x
+          {repeat}
         </motion.div>
       </AnimatePresence>
     </button>

@@ -1,11 +1,29 @@
-import { visualStore } from "@store/visualStore";
+import { ChainingMode } from "@hooks/useAnimator/visuals";
+import { animeStore } from "@store/animeStore";
+import mod from "@utils/mod";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
+import { useShallow } from "zustand/shallow";
 
-export default function RepeatSelect(props: { visualId: number }) {
-  const repeat = useStore(visualStore, (state) => state.effects[props.visualId].repeat);
-  const moveRepeat = useStore(visualStore, (state) => state.moveRepeat);
+export default function ChainingSelector(props: { groupId: number; visualId: number }) {
+  const chaining = useStore(
+    animeStore,
+    useShallow((state) => {
+      const group = state.groups.find((g) => g.id === props.groupId);
+      if (!group) return undefined;
+      const visual = group.visuals.find((v) => v.id === props.visualId);
+      if (!visual) return undefined;
+      return visual.chaining;
+    }),
+  );
+
+  const setChainingMode = useStore(animeStore, (state) => state.setVisualChainingMode);
+
+  const moveChaining = useCallback(
+    (offset: number) => setChainingMode(mod((chaining ?? 1) + offset, ChainingMode.length)),
+    [setChainingMode, chaining],
+  );
 
   const [direction, setDirection] = useState<boolean>(true);
   const block = useRef<boolean>(false);
@@ -17,19 +35,19 @@ export default function RepeatSelect(props: { visualId: number }) {
     block.current = true;
 
     setDirection(false);
-    moveRepeat(props.visualId, -1);
-  }, [moveRepeat, props.visualId, setDirection, block]);
+    moveChaining(-1);
+  }, [moveChaining, setDirection, block]);
 
   const handleNextRepeat = useCallback(() => {
     if (block.current) return;
     block.current = true;
 
     setDirection(true);
-    moveRepeat(props.visualId, 1);
-  }, [moveRepeat, props.visualId, setDirection, block]);
+    moveChaining(1);
+  }, [moveChaining, setDirection, block]);
 
   const handleClick = useCallback(
-    (e: React.MouseEvent) => (e.shiftKey ? handlePrevRepeat() : handleNextRepeat()),
+    (e: React.MouseEvent) => (e.shiftKey ? handlePrevRepeat : handleNextRepeat)(),
     [handlePrevRepeat, handleNextRepeat],
   );
 
@@ -40,7 +58,7 @@ export default function RepeatSelect(props: { visualId: number }) {
 
   return (
     <button
-      className="grid aspect-square grid-cols-1 grid-rows-1 overflow-clip rounded-2xl bg-white"
+      className="grid grid-cols-1 grid-rows-1 overflow-clip rounded-2xl bg-white"
       onClick={handleClick}
       onWheel={handleWheel}
     >
@@ -51,10 +69,10 @@ export default function RepeatSelect(props: { visualId: number }) {
           initial={initial}
           animate={{ opacity: 1, x: 0, rotate: 0 }}
           exit={exit}
-          key={repeat}
+          key={chaining}
           className="col-start-1 col-end-1 row-start-1 row-end-1 grid w-full origin-bottom place-items-center p-4 font-mono text-2xl font-bold text-black"
         >
-          {repeat}
+          {chaining}
         </motion.div>
       </AnimatePresence>
     </button>
