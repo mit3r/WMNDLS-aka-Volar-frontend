@@ -1,9 +1,9 @@
-import { ChainingMode, type Visual } from "@hooks/useAnimator/visuals";
+import { ChainingMode, type Visual } from "@hooks/useAnimator/types/visuals";
 import { produce } from "immer";
 import type { StateCreator } from "zustand";
 import type { AnimeStore } from "./animeStore";
-import { EffectType } from "@hooks/useAnimator/effects";
 import { CRGB } from "@api/Transmitter";
+import { EffectType } from "@hooks/useAnimator/types/effects";
 
 export interface VisualSlice {
   // Currently editable visual
@@ -20,7 +20,7 @@ export interface VisualSlice {
 
   // Modifying visual properties
   setVisualChainingMode: (chaining: Visual["chaining"]) => void;
-  setVisualStart: (start: number) => void;
+  setVisualDelay: (delay: number) => void;
   setVisualDuration: (duration: number) => void;
   setVisualEffect: (effect: Visual["effect"]) => void;
 }
@@ -55,7 +55,7 @@ export const visualSlice: StateCreator<AnimeStore, [], [], VisualSlice> = (set, 
         state.groups[groupId].visuals.push({
           id: newVisualId,
           chaining: ChainingMode.WHEN_LAST_ENDED,
-          start: 0,
+          delay: 0,
           duration: 1,
           effect: EffectType.Solid,
           gradient: [{ id: 1, color: new CRGB(255, 255, 255) }],
@@ -84,14 +84,14 @@ export const visualSlice: StateCreator<AnimeStore, [], [], VisualSlice> = (set, 
       }),
     ),
 
-  setVisualStart: (start) =>
+  setVisualDelay: (delay) =>
     set(
       produce((state: AnimeStore) => {
         const groupId = state.groups.findIndex((g) => g.visuals.some((v) => v.id === get().editableVisualId));
         if (groupId === -1) return;
         const visualIndex = state.groups[groupId].visuals.findIndex((v) => v.id === get().editableVisualId);
         if (visualIndex === -1) return;
-        state.groups[groupId].visuals[visualIndex].start = start;
+        state.groups[groupId].visuals[visualIndex].delay = delay;
       }),
     ),
   setVisualDuration: (duration) =>

@@ -1,0 +1,12 @@
+{
+  "when_last_ended": {
+    "name": "When Last Ended",
+    "description": "Trigger when the last visual in the group ends",
+    "src": "/src/assets/ChainIcons/keyboard_tab_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "when_last_started": {
+    "name": "When Last Started",
+    "description": "Trigger when the last visual in the group starts",
+    "src": "/src/assets/ChainIcons/start_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  }
+}

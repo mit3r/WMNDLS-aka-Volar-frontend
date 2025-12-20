@@ -29,7 +29,7 @@ export default function TabsComponent() {
 
   return (
     <div className="grid h-full grid-rows-[auto_1fr] gap-4 p-4">
-      <TabsRadio tab={tab ?? "control"} onChange={(newTab) => setTab(newTab)} />
+      <TabsRadio tab={tab ?? "control"} onChange={setTab} />
       {TabComponent}
     </div>
   );

@@ -1,71 +1,43 @@
-import { RepeatMode } from "@hooks/useAnimator/visuals";
+import RepeatIcons from "@assets/RepeatIcons/index.json";
+import { RepeatMode } from "@hooks/useAnimator/types/visuals";
 import { animeStore } from "@store/animeStore";
-import mod from "@utils/mod";
-import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import clsx from "clsx";
+import { animate } from "motion";
+import { motion, useMotionValue } from "motion/react";
+import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
 
 export default function RepeatSelect(props: { groupId: number }) {
   const repeat = useStore(animeStore, (state) => state.groups.find((g) => g.id === props.groupId)?.mode);
   const setGroupMode = useStore(animeStore, (state) => state.setGroupMode);
 
-  const moveRepeat = useCallback(
-    (offset: number) => {
-      setGroupMode(mod((repeat ?? 1) + offset, RepeatMode.length));
-    },
-    [setGroupMode, repeat],
-  );
-
-  const [direction, setDirection] = useState<boolean>(true);
-  const block = useRef<boolean>(false);
-  const initial = useMemo(() => ({ opacity: 1, x: direction ? 50 : -50, rotate: direction ? 90 : -90 }), [direction]);
-  const exit = useMemo(() => ({ opacity: 0, x: direction ? -50 : 50, rotate: direction ? -90 : 90 }), [direction]);
-
-  const handlePrevRepeat = useCallback(() => {
-    if (block.current) return;
-    block.current = true;
-
-    setDirection(false);
-    moveRepeat(-1);
-  }, [moveRepeat, setDirection, block]);
-
-  const handleNextRepeat = useCallback(() => {
-    if (block.current) return;
-    block.current = true;
-
-    setDirection(true);
-    moveRepeat(1);
-  }, [moveRepeat, setDirection, block]);
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => (e.shiftKey ? handlePrevRepeat() : handleNextRepeat()),
-    [handlePrevRepeat, handleNextRepeat],
-  );
-
-  const handleWheel = useCallback(
-    (e: React.WheelEvent) => (e.deltaY > 0 ? handlePrevRepeat() : handleNextRepeat()),
-    [handlePrevRepeat, handleNextRepeat],
-  );
+  const y = useMotionValue(0);
 
   return (
-    <button
-      className="grid aspect-square grid-cols-1 grid-rows-1 overflow-clip rounded-2xl bg-white"
-      onClick={handleClick}
-      onWheel={handleWheel}
-    >
-      <AnimatePresence>
-        <motion.div
-          onAnimationComplete={() => (block.current = false)}
-          transition={{ duration: 0.1 }}
-          initial={initial}
-          animate={{ opacity: 1, x: 0, rotate: 0 }}
-          exit={exit}
-          key={repeat}
-          className="col-start-1 col-end-1 row-start-1 row-end-1 grid w-full origin-bottom place-items-center p-4 font-mono text-2xl font-bold text-black"
-        >
-          {repeat}
-        </motion.div>
-      </AnimatePresence>
-    </button>
+    <div className="relative grid h-full w-full grid-cols-subgrid grid-rows-subgrid place-content-stretch gap-2 rounded-2xl bg-gray-600">
+      {Object.entries(RepeatIcons).map(([mode, value]) => {
+        const handleClick = (valueY: number) => {
+          setGroupMode(props.groupId, mode as RepeatMode);
+          animate(y, valueY, { duration: 0.2 });
+        };
+        return (
+          <div
+            className={twMerge(
+              clsx("z-10 grid h-full w-full place-content-center brightness-25 transition-all", {
+                "brightness-100": repeat !== mode,
+              }),
+            )}
+            key={mode}
+            onClick={(e) => handleClick(e.currentTarget.offsetTop)}
+            ref={(r) => {
+              if (repeat === mode) handleClick(r ? r.offsetTop : 0);
+            }}
+          >
+            <img className="max-h-full max-w-full" src={value.src} alt="" />
+          </div>
+        );
+      })}
+      <motion.div style={{ y }} className="absolute z-0 aspect-square w-full rounded-xl bg-white" />
+    </div>
   );
 }

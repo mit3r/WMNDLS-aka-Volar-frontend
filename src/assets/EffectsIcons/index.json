@@ -1,0 +1,92 @@
+{
+  "Solid": {
+    "name": "Solid",
+    "description": "Solid description",
+    "img": "/src/assets/EffectsIcons/circle_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Breathing": {
+    "name": "Breathing",
+    "description": "Breathing description",
+    "img": "/src/assets/EffectsIcons/ent_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Flashing": {
+    "name": "Flashing",
+    "description": "Flashing description",
+    "img": "/src/assets/EffectsIcons/flashlight_on_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Loading": {
+    "name": "Loading",
+    "description": "Loading description",
+    "img": "/src/assets/EffectsIcons/battery_5_bar_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Shooting": {
+    "name": "Shooting",
+    "description": "Shooting description",
+    "img": "/src/assets/EffectsIcons/stars_2_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Tenis": {
+    "name": "Tenis",
+    "description": "Tenis description",
+    "img": "/src/assets/EffectsIcons/sports_tennis_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Wave": {
+    "name": "Wave",
+    "description": "Wave description",
+    "img": "/src/assets/EffectsIcons/airwave_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Strobe": {
+    "name": "Strobe",
+    "description": "Strobe description",
+    "img": "/src/assets/EffectsIcons/sick_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Pulse": {
+    "name": "Pulse",
+    "description": "Pulse description",
+    "img": "/src/assets/EffectsIcons/cardiology_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Sparkle": {
+    "name": "Sparkle",
+    "description": "Sparkle description",
+    "img": "/src/assets/EffectsIcons/Sparkle.svg"
+  },
+  "Confetti": {
+    "name": "Confetti",
+    "description": "Confetti description",
+    "img": "/src/assets/EffectsIcons/celebration_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Glitter": {
+    "name": "Glitter",
+    "description": "Glitter description",
+    "img": "/src/assets/EffectsIcons/diamond_shine_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Twinkle": {
+    "name": "Twinkle",
+    "description": "Twinkle description",
+    "img": "/src/assets/EffectsIcons/wand_stars_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Meteor": {
+    "name": "Meteor",
+    "description": "Meteor description",
+    "img": "/src/assets/EffectsIcons/Meteor.svg"
+  },
+  "Lightning": {
+    "name": "Lightning",
+    "description": "Lightning description",
+    "img": "/src/assets/EffectsIcons/electric_bolt_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Rain": {
+    "name": "Rain",
+    "description": "Rain description",
+    "img": "/src/assets/EffectsIcons/rainy_light_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Fire": {
+    "name": "Fire",
+    "description": "Fire description",
+    "img": "/src/assets/EffectsIcons/local_fire_department_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "Music": {
+    "name": "Music",
+    "description": "Music description",
+    "img": "/src/assets/EffectsIcons/music_note_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  }
+}

@@ -1,5 +1,5 @@
 import { CRGB } from "@api/Transmitter";
-import type { Effect } from ".";
+import type { Effect } from "../types/effects";
 
 export const ClimbingEffect: Effect = {
   basePeriod: 2,

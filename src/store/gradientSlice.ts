@@ -1,5 +1,5 @@
 import { CRGB } from "@api/Transmitter";
-import type { Gradient } from "@hooks/useAnimator/gradients";
+import type { Gradient } from "@hooks/useAnimator/types/gradients";
 import type { StateCreator } from "zustand";
 import type { AnimeStore } from "./animeStore";
 import { produce } from "immer";

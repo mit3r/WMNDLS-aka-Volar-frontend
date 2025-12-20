@@ -1,43 +1,36 @@
-import type { Group } from "@hooks/useAnimator/groups";
+import { Pc } from "@api/Transmitter";
+import type { Group, GroupId } from "@hooks/useAnimator/types/groups";
+import { RepeatMode } from "@hooks/useAnimator/types/visuals";
 import { produce } from "immer";
 import type { StateCreator } from "zustand";
 import type { AnimeStore } from "./animeStore";
-import { Pc } from "@api/Transmitter";
-import { RepeatMode } from "@hooks/useAnimator/visuals";
-import type { Progress } from "@hooks/useAnimator/progress";
-import mod from "@utils/mod";
 
 export interface GroupSlice {
   groups: Group[];
-  progress: Progress[];
 
   // adding/removing groups
   addGroup: () => void;
-  removeGroup: (groupId: number) => void;
+  removeGroup: (groupId: GroupId) => void;
 
   // Handling groups order
   // setGroups: (newGroups: Group[]) => void;
-  getGroupOrder: () => number[];
-  setGroupOrder: (order: number[]) => void;
+  getGroupOrder: () => GroupId[];
+  setGroupOrder: (order: GroupId[]) => void;
 
   // Currently editable group
-  editableGroupId: number | null;
-  setEditableGroupId: (groupId: number | null) => void;
+  editableGroupId: GroupId | null;
+  setEditableGroupId: (groupId: GroupId | null) => void;
 
   // Modifying group properties
-  setGroupChannel: (channelId: Group["channelId"]) => void;
-  setGroupMode: (mode: Group["mode"]) => void;
-
-  startGroupTimer: (groupId: number) => void;
-  resetGroupTimer: (groupId: number) => void;
-  handleGroupsProgresses: (deltaTime: number) => void;
+  setGroupChannel: (groupId: GroupId, channelId: Group["channelId"]) => void;
+  setGroupMode: (groupId: GroupId, mode: Group["mode"]) => void;
+  setGroupDelay: (groupId: GroupId, delay: number) => void;
 }
 
 let groupIndexer = 1;
 
 export const groupSlice: StateCreator<AnimeStore, [], [], GroupSlice> = (set, get) => ({
   groups: [],
-  progress: [],
 
   addGroup: () =>
     set(
@@ -47,14 +40,9 @@ export const groupSlice: StateCreator<AnimeStore, [], [], GroupSlice> = (set, ge
         state.groups.push({
           id: groupId,
           channelId: Pc.BROADCAST_CHANNEL,
-          mode: RepeatMode.OFF,
+          mode: RepeatMode.STOP,
           visuals: [],
-          duration: 0,
-        });
-
-        state.progress.push({
-          groupId: groupId,
-          progress: null,
+          delay: 0,
         });
       }),
     ),
@@ -63,14 +51,13 @@ export const groupSlice: StateCreator<AnimeStore, [], [], GroupSlice> = (set, ge
     set(
       produce((state: AnimeStore) => {
         state.groups = state.groups.filter((group) => group.id !== groupId);
-        state.progress = state.progress.filter((p) => p.groupId !== groupId);
         state.editableGroupId = state.editableGroupId === groupId ? null : state.editableGroupId;
       }),
     ),
 
   getGroupOrder: () => get().groups.map((g) => g.id),
 
-  setGroupOrder: (order: number[]) =>
+  setGroupOrder: (order: GroupId[]) =>
     set(
       produce((state: AnimeStore) => {
         const newGroups: Group[] = [];
@@ -84,67 +71,52 @@ export const groupSlice: StateCreator<AnimeStore, [], [], GroupSlice> = (set, ge
 
   editableGroupId: null,
 
-  setEditableGroupId: (groupId: number | null) =>
+  setEditableGroupId: (groupId: GroupId | null) =>
     set(
       produce((state: AnimeStore) => {
-        console.log("Setting editableGroupId to:", groupId);
-
         state.editableGroupId = groupId;
       }),
     ),
 
-  setGroupChannel: (channelId: Group["channelId"]) =>
+  setGroupChannel: (groupId: GroupId, channelId: Group["channelId"]) =>
     set(
       produce((state: AnimeStore) => {
-        const groupIndex = state.groups.findIndex((g) => g.id === get().editableGroupId);
+        const groupIndex = state.groups.findIndex((g) => g.id === groupId);
         if (groupIndex === -1) return;
         state.groups[groupIndex].channelId = channelId;
       }),
     ),
 
-  setGroupMode: (mode: Group["mode"]) =>
+  setGroupMode: (groupId: number, newMode: Group["mode"]) =>
     set(
       produce((state: AnimeStore) => {
-        const groupIndex = state.groups.findIndex((g) => g.id === get().editableGroupId);
-        if (groupIndex === -1) return;
-        state.groups[groupIndex].mode = mode;
-      }),
-    ),
+        const GIndex = state.groups.findIndex((g) => g.id === groupId);
+        if (GIndex === -1) return;
+        if (state.groups[GIndex].mode === newMode) return;
 
-  startGroupTimer: (groupId: number) =>
-    set(
-      produce((state: AnimeStore) => {
-        const progressId = state.progress.findIndex((p) => p.groupId === groupId);
-        if (progressId !== -1) state.progress[progressId].progress = 0;
-      }),
-    ),
+        // In channel conflict, set other group's mode to STOP
+        for (let anotherGIndex = 0; anotherGIndex < state.groups.length; anotherGIndex++) {
+          if (anotherGIndex === GIndex) continue;
 
-  resetGroupTimer: (groupId: number) =>
-    set(
-      produce((state: AnimeStore) => {
-        const progressId = state.progress.findIndex((p) => p.groupId === groupId);
-        if (progressId !== -1) state.progress[progressId].progress = null;
-      }),
-    ),
+          const isBroadcastComparison =
+            state.groups[anotherGIndex].channelId === Pc.BROADCAST_CHANNEL ||
+            state.groups[GIndex].channelId === Pc.BROADCAST_CHANNEL;
 
-  handleGroupsProgresses: (deltaTime: number) =>
-    set(
-      produce((state: AnimeStore) => {
-        for (const timers of state.progress) {
-          const groupId = state.groups.findIndex((g) => g.id === timers.groupId);
-          if (groupId === -1) throw new Error("Group not found for progress handling");
-
-          if (timers.progress === null) {
-            if (state.groups[groupId].mode === RepeatMode.OFF) continue;
-            timers.progress = 0;
-          }
-
-          const newProgress = timers.progress + deltaTime / state.groups[groupId].duration;
-          if (newProgress >= 1) {
-            if (state.groups[groupId].mode === RepeatMode.FOREVER) timers.progress = mod(newProgress, 1);
-            if (state.groups[groupId].mode === RepeatMode.OFF) timers.progress = null;
-          }
+          if (state.groups[anotherGIndex].channelId !== state.groups[GIndex].channelId && !isBroadcastComparison)
+            continue;
+          if (state.groups[anotherGIndex].mode !== RepeatMode.STOP) state.groups[anotherGIndex].mode = RepeatMode.STOP;
         }
+
+        state.groups[GIndex].mode = newMode;
+      }),
+    ),
+
+  setGroupDelay: (groupId: GroupId, delay: number) =>
+    set(
+      produce((state: AnimeStore) => {
+        const groupIndex = state.groups.findIndex((g) => g.id === groupId);
+        if (groupIndex === -1) return;
+        state.groups[groupIndex].delay = delay;
       }),
     ),
 });

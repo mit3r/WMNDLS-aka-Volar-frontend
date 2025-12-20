@@ -1,6 +1,6 @@
-import { ChainingMode } from "@hooks/useAnimator/visuals";
+import ChainIcons from "@assets/ChainIcons/index.json";
+import { ChainingMode } from "@hooks/useAnimator/types/visuals";
 import { animeStore } from "@store/animeStore";
-import mod from "@utils/mod";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
@@ -20,10 +20,10 @@ export default function ChainingSelector(props: { groupId: number; visualId: num
 
   const setChainingMode = useStore(animeStore, (state) => state.setVisualChainingMode);
 
-  const moveChaining = useCallback(
-    (offset: number) => setChainingMode(mod((chaining ?? 1) + offset, ChainingMode.length)),
-    [setChainingMode, chaining],
-  );
+  const moveChaining = useCallback(() => {
+    if (chaining === ChainingMode.WHEN_LAST_ENDED) setChainingMode(ChainingMode.WHEN_LAST_STARTED);
+    if (chaining === ChainingMode.WHEN_LAST_STARTED) setChainingMode(ChainingMode.WHEN_LAST_ENDED);
+  }, [setChainingMode, chaining]);
 
   const [direction, setDirection] = useState<boolean>(true);
   const block = useRef<boolean>(false);
@@ -35,7 +35,7 @@ export default function ChainingSelector(props: { groupId: number; visualId: num
     block.current = true;
 
     setDirection(false);
-    moveChaining(-1);
+    moveChaining();
   }, [moveChaining, setDirection, block]);
 
   const handleNextRepeat = useCallback(() => {
@@ -43,7 +43,7 @@ export default function ChainingSelector(props: { groupId: number; visualId: num
     block.current = true;
 
     setDirection(true);
-    moveChaining(1);
+    moveChaining();
   }, [moveChaining, setDirection, block]);
 
   const handleClick = useCallback(
@@ -72,7 +72,9 @@ export default function ChainingSelector(props: { groupId: number; visualId: num
           key={chaining}
           className="col-start-1 col-end-1 row-start-1 row-end-1 grid w-full origin-bottom place-items-center p-4 font-mono text-2xl font-bold text-black"
         >
-          {chaining}
+          {chaining !== undefined && chaining !== ChainingMode.length && (
+            <img className="brightness-25" src={ChainIcons[chaining].src} />
+          )}
         </motion.div>
       </AnimatePresence>
     </button>

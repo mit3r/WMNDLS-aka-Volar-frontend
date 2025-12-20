@@ -1,17 +1,21 @@
-import type { Stop } from "@hooks/useAnimator/gradients";
+import type { Stop } from "@hooks/useAnimator/types/gradients";
 import { CRGB } from "@api/Transmitter";
 import { AnimatePresence, motion, Reorder } from "motion/react";
 import { useStore } from "zustand";
 import { animeStore } from "@store/animeStore";
+import { useShallow } from "zustand/shallow";
 
 export default function Composer(props: { visualId: number }) {
-  const gradient = useStore(animeStore, (state) => {
-    const group = state.groups.findIndex((g) => g.id === state.editableGroupId);
-    if (group === -1) return [];
-    const visual = state.groups[group].visuals.find((v) => v.id === props.visualId);
-    if (!visual) return [];
-    return visual.gradient;
-  });
+  const gradient = useStore(
+    animeStore,
+    useShallow((state) => {
+      const group = state.groups.findIndex((g) => g.id === state.editableGroupId);
+      if (group === -1) return [];
+      const visual = state.groups[group].visuals.find((v) => v.id === props.visualId);
+      if (!visual) return [];
+      return visual.gradient;
+    }),
+  );
 
   const setGradient = useStore(animeStore, (state) => state.setGradient);
   const addGradientStop = useStore(animeStore, (state) => state.addGradientStop);

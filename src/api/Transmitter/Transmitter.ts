@@ -13,7 +13,7 @@ class Transmitter {
   // Singleton instance
   private static instance: Transmitter;
 
-  private constructor() {}
+  private constructor(private debug: boolean = false) {}
 
   public static getInstance(): Transmitter {
     if (!Transmitter.instance) {
@@ -52,7 +52,7 @@ class Transmitter {
           const lines = buffer.split("\n");
           buffer = lines.pop() || "";
           for (const line of lines) {
-            console.log("Received:", line.replace(/\r$/, ""));
+            if (this.debug) console.log("Received:", line.replace(/\r$/, ""));
           }
         }
       }

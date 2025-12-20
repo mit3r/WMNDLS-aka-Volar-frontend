@@ -1,5 +1,5 @@
 import { CRGB } from "@api/Transmitter";
-import type { Effect } from ".";
+import type { Effect } from "../types/effects";
 
 function pulse(x: number, a: number): number {
   if (x < -a || x > a) return 0;

@@ -1,5 +1,5 @@
 import { CRGB } from "@api/Transmitter";
-import type { Effect } from ".";
+import type { Effect } from "../types/effects";
 
 function star(x: number) {
   if (x < 0 || x > 1) return 0;

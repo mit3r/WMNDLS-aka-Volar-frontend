@@ -7,11 +7,7 @@ export class CRGB {
   private _green: number = 0;
   private _blue: number = 0;
 
-  constructor(
-    r: number = 0,
-    g: number = 0,
-    b: number = 0,
-  ) {
+  constructor(r: number = 0, g: number = 0, b: number = 0) {
     this.red = this.limit(r);
     this.green = this.limit(g);
     this.blue = this.limit(b);
@@ -104,10 +100,12 @@ export class CRGB {
   }
 
   static blend(a: CRGB, b: CRGB): CRGB {
-    return new CRGB(
-      (a.red + b.red) >> 1,
-      (a.green + b.green) >> 1,
-      (a.blue + b.blue) >> 1,
-    );
+    return new CRGB((a.red + b.red) >> 1, (a.green + b.green) >> 1, (a.blue + b.blue) >> 1);
+  }
+
+  static createArray(length: number, fill?: CRGB): CRGB[] {
+    return Array(length)
+      .fill(null)
+      .map(() => (fill ? new CRGB(fill.r, fill.g, fill.b) : new CRGB()));
   }
 }

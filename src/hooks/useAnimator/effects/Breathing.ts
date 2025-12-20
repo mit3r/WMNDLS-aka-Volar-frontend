@@ -1,11 +1,11 @@
 import { CRGB } from "@api/Transmitter";
-import { EffectClass } from ".";
+import type { Effect } from "../types/effects";
 
-export class BreathingEffect implements EffectClass {
-  static basePeriod: number = 5;
+export const BreathingEffect: Effect = {
+  basePeriod: 5,
 
-  static requestFrame = (_ledOffset: number, inColor: CRGB, timeOffset: number): CRGB => {
-    const brightness = Math.max(Math.sin(timeOffset * 4 * Math.PI) * 0.5, 0);
+  requestFrame: (_ledOffset: number, inColor: CRGB, timeOffset: number): CRGB => {
+    const brightness = Math.max(Math.sin(timeOffset * Math.PI) * 0.5, 0);
     return new CRGB(inColor.r * brightness, inColor.g * brightness, inColor.b * brightness);
-  };
-}
+  },
+};
