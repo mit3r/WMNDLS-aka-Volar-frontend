@@ -66,18 +66,29 @@ export class CRGB {
   }
 
   get RGB16(): Uint8Array {
-    const r = (this._red >> 3) & 0x1f;
-    const g = (this._green >> 2) & 0x3f;
-    const b = (this._blue >> 3) & 0x1f;
-    const value = (r << 11) | (g << 5) | b;
+    // Pobieramy wartości (bez zmian)
+    const r = (this._red >> 3) & 0x1f; // 5 bitów
+    const g = (this._green >> 2) & 0x3f; // 6 bitów
+    const b = (this._blue >> 3) & 0x1f; // 5 bitów
+
+    // ZMIANA: Format BGR565
+    // Blue na najstarszych bitach (<< 11), Red na najmłodszych
+    const value = (b << 11) | (g << 5) | r;
+
     return new Uint8Array([value & 0xff, value >> 8]);
   }
 
   get RGB8(): Uint8Array {
-    const r = (this._red >> 5) & 0x07;
-    const g = (this._green >> 5) & 0x07;
-    const b = (this._blue >> 6) & 0x03;
-    return new Uint8Array([(r << 5) | (g << 2) | b]);
+    // Pobieramy wartości (bez zmian)
+    const r = (this._red >> 5) & 0x07; // 3 bity
+    const g = (this._green >> 5) & 0x07; // 3 bity
+    const b = (this._blue >> 6) & 0x03; // 2 bity
+
+    // ZMIANA: Format BGR332 (BB GGG RRR)
+    // Blue (2 bity) idzie na samą górę (<< 6)
+    // Green (3 bity) zostaje w środku (<< 3)
+    // Red (3 bity) ląduje na dole (bez przesunięcia)
+    return new Uint8Array([(b << 6) | (g << 3) | r]);
   }
 
   toBytes(n: 1 | 2 | 3): Uint8Array {

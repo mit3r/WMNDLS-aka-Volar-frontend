@@ -4,6 +4,7 @@ export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "er
 export type TransmitterListener = (status: ConnectionStatus) => void;
 
 class Transmitter {
+  private order: number = 1;
   private port: SerialPort | null = null;
   private writer: WritableStreamDefaultWriter | null = null;
   private reader: ReadableStreamDefaultReader | null = null;
@@ -136,7 +137,16 @@ class Transmitter {
     }
 
     try {
+      msg.bOrder = this.order++;
       const { buffer } = msg.getBinary();
+
+      console.log("Sending message:");
+      // Debug output
+
+      const byteArray = new Uint8Array(buffer);
+      const hexArray = Array.from(byteArray).map((b) => b.toString(16).padStart(2, "0"));
+      console.log(hexArray.join(" "));
+
       await this.writer.write(buffer);
     } catch (error) {
       console.error("Failed to send message:", error);

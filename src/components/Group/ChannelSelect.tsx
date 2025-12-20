@@ -10,12 +10,18 @@ export default function ChannelSelect(props: { groupId: GroupId }) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
     setChannel(props.groupId, parseInt(e.target.value) as Pc.Channel);
 
+  const channel = useStore(animeStore, (state) => {
+    const group = state.groups.find((g) => g.id === props.groupId);
+    return group ? group.channelId : Pc.BROADCAST_CHANNEL;
+  });
+
   return (
     <select
       name="channel-id"
       id="channel-id"
       className="h-full w-full rounded-lg bg-gray-700 p-2"
       onChange={handleChange}
+      value={channel}
     >
       {Array.from({ length: Pc.PayloadMaxChannels[rgbFormat] }, (_, i) => i).map((i) => (
         <option key={i} value={i}>
