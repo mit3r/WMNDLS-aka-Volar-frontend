@@ -18,7 +18,7 @@ export default function renderFrame(this: Player, group: Group): TransmitQueueIt
   const visualColors: CRGB[][] = [];
 
   for (let i = 0; i < tl.items.length; i++) {
-    const visual = group.visuals[i];
+    const { gradient, effect } = group.visuals[i];
     const item = tl.items[i];
     if (tl.elapsed < item.start || tl.elapsed > item.end) continue;
 
@@ -29,8 +29,8 @@ export default function renderFrame(this: Player, group: Group): TransmitQueueIt
     for (let ledIndex = 0; ledIndex < Pc.NUM_LEDS; ledIndex++) {
       let color: CRGB;
       const led = ledIndex / Pc.NUM_LEDS;
-      color = getColorFromGradient(led, visual.gradient);
-      color = EFFECTS[visual.effect].requestFrame(led, color, percent);
+      color = getColorFromGradient(led, gradient);
+      color = CRGB.multiply(color, EFFECTS[effect].get(led, percent));
       visualColors[visualColors.length - 1][ledIndex] = color;
     }
   }

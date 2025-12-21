@@ -1,4 +1,3 @@
-import { CRGB } from "@api/Transmitter";
 import type { Effect } from "../types/effects";
 
 function pulse(x: number, a: number): number {
@@ -9,8 +8,7 @@ function pulse(x: number, a: number): number {
 export const PulseEffect: Effect = {
   basePeriod: 5,
 
-  requestFrame: (ledOffset: number, inColor: CRGB, timeOffset: number): CRGB => {
-    const brightness = pulse(ledOffset, timeOffset);
-    return new CRGB(inColor.r * brightness, inColor.g * brightness, inColor.b * brightness);
+  get: (ledOffset: number, timeOffset: number): number => {
+    return pulse(ledOffset, timeOffset);
   },
 };

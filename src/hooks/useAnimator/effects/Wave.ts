@@ -1,13 +1,13 @@
-import { CRGB } from "@api/Transmitter";
 import type { Effect } from "../types/effects";
 
 export const WaveEffect: Effect = {
   basePeriod: 10,
 
-  requestFrame: (ledOffset: number, inColor: CRGB, timeOffset: number): CRGB => {
-    const waveLength = 10; // length of one wave cycle in LED units
-    const positionInWave = (ledOffset + timeOffset) % waveLength;
-    const brightnessFactor = 0.5 + 0.5 * Math.sin((positionInWave / waveLength) * 2 * Math.PI);
-    return new CRGB(inColor.r * brightnessFactor, inColor.g * brightnessFactor, inColor.b * brightnessFactor);
+  get(ledOffset: number, timeOffset: number): number {
+    const w1 = 0.3 * Math.sin(60 * ledOffset - 10 * Math.PI * timeOffset);
+    const w2 = 0.15 * Math.sin(30 * ledOffset - 10 * Math.PI * timeOffset);
+    const w3 = 0.05 * Math.cos(90 * ledOffset - 10 * Math.PI * timeOffset);
+
+    return 0.5 + w1 + w2 + w3;
   },
 };

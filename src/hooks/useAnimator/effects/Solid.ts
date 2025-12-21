@@ -1,10 +1,9 @@
-import { CRGB } from "@api/Transmitter";
 import type { Effect } from "../types/effects";
 
 export const SolidEffect: Effect = {
-  basePeriod: 0,
+  basePeriod: 1,
 
-  requestFrame: (_ledOffset: number, inColor: CRGB): CRGB => {
-    return inColor;
+  get: (): number => {
+    return 1;
   },
 };

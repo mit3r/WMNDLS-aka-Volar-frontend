@@ -1,11 +1,11 @@
-import type { TransmitQueueItem } from "./handlers/transmitQueue";
+import { animeStore } from "@store/animeStore";
 import type { Group, GroupId } from "../types/groups";
 import createTimeline from "./handlers/createTimeline";
 import moveTimeline from "./handlers/moveTimeline";
 import renderAnimationFrame from "./handlers/renderFrame";
-import type { Timeline } from "./types";
+import type { TransmitQueueItem } from "./handlers/transmitQueue";
 import transmitQueue from "./handlers/transmitQueue";
-import { animeStore } from "@store/animeStore";
+import type { Timeline } from "./types";
 import { RepeatMode } from "../types/visuals";
 
 export class Player {
@@ -39,12 +39,14 @@ export class Player {
     const elapsed = this.getElapsed();
 
     for (const group of groups) {
-      if (this.moveTimeline(group, elapsed)) {
-        const item = this.renderAnimationFrame(group);
-        if (item !== null) queue.push(item);
-      } else {
-        animeStore.getState().setGroupMode(group.id, RepeatMode.STOP);
-      }
+      const mode = this.moveTimeline(group, elapsed);
+      if (mode !== group.mode) animeStore.getState().setGroupMode(group.id, mode);
+      console.log("Group", group.id, "elapsed:", this.timelines[group.id].elapsed, "mode:", mode);
+
+      if (mode === RepeatMode.STOP) continue;
+
+      const item = this.renderAnimationFrame(group);
+      if (item !== null) queue.push(item);
     }
 
     this.transmitQueue(queue);

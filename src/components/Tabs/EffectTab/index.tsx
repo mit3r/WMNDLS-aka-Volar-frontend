@@ -18,7 +18,7 @@ export default function EffectTab() {
   const setEffectType = useStore(animeStore, (state) => state.setVisualEffect);
 
   return (
-    <div className="grid h-fit grid-cols-2 gap-6 overflow-y-auto py-2 pr-4 pl-2">
+    <div className="grid h-full grid-cols-2 gap-6 overflow-y-auto py-2 pr-4 pl-2">
       {Object.values(EffectType).map((key) => (
         <EffectCard selected={effect === key} effect={key} setEffectType={setEffectType} />
       ))}

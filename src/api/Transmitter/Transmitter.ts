@@ -139,14 +139,6 @@ class Transmitter {
     try {
       msg.bOrder = this.order++;
       const { buffer } = msg.getBinary();
-
-      console.log("Sending message:");
-      // Debug output
-
-      const byteArray = new Uint8Array(buffer);
-      const hexArray = Array.from(byteArray).map((b) => b.toString(16).padStart(2, "0"));
-      console.log(hexArray.join(" "));
-
       await this.writer.write(buffer);
     } catch (error) {
       console.error("Failed to send message:", error);

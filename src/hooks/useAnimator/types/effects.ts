@@ -1,12 +1,12 @@
-import { CRGB } from "@api/Transmitter";
 import { BreathingEffect } from "../effects/Breathing";
-import { SolidEffect } from "../effects/Solid";
-import { FlashingEffect } from "../effects/Flashing";
-import { ShootingEffect } from "../effects/Shooting";
 import { ClimbingEffect } from "../effects/Climbing";
-import { WaveEffect } from "../effects/Wave";
-import { StrobeEffect } from "../effects/Strobe";
+import { FlashingEffect } from "../effects/Flashing";
 import { PulseEffect } from "../effects/Pulse";
+import { ShootingEffect } from "../effects/Shooting";
+import { SolidEffect } from "../effects/Solid";
+import { StrobeEffect } from "../effects/Strobe";
+import { TenisEffect } from "../effects/Tenis";
+import { WaveEffect } from "../effects/Wave";
 
 export enum EffectType {
   Solid = "Solid", // (solid color)
@@ -31,7 +31,7 @@ export enum EffectType {
 
 export interface Effect {
   basePeriod: number; // in seconds
-  requestFrame: (index: number, color: CRGB, offset: number) => CRGB;
+  get: (index: number, offset: number) => number;
 }
 
 export const EFFECTS: Record<EffectType, Effect> = {
@@ -40,17 +40,17 @@ export const EFFECTS: Record<EffectType, Effect> = {
   [EffectType.Flashing]: FlashingEffect,
   [EffectType.Loading]: ClimbingEffect,
   [EffectType.Shooting]: ShootingEffect,
-  [EffectType.Tenis]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Wave]: WaveEffect, // TODO
+  [EffectType.Tenis]: TenisEffect,
+  [EffectType.Wave]: WaveEffect,
   [EffectType.Strobe]: StrobeEffect,
-  [EffectType.Pulse]: PulseEffect,
-  [EffectType.Sparkle]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Confetti]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Glitter]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Twinkle]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Meteor]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Lightning]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Rain]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Fire]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
-  [EffectType.Music]: { basePeriod: 1, requestFrame: () => new CRGB(0, 0, 0) },
+  [EffectType.Pulse]: PulseEffect, // TODO
+  [EffectType.Sparkle]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Confetti]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Glitter]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Twinkle]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Meteor]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Lightning]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Rain]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Fire]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Music]: { basePeriod: 1, get: () => 1 },
 };

@@ -65,29 +65,25 @@ export class CRGB {
     return new Uint8Array([this._red, this._green, this._blue]);
   }
 
+  multiplyBy(factor: number): void {
+    this._red = this.limit(this._red * factor);
+    this._green = this.limit(this._green * factor);
+    this._blue = this.limit(this._blue * factor);
+  }
+
   get RGB16(): Uint8Array {
-    // Pobieramy wartości (bez zmian)
     const r = (this._red >> 3) & 0x1f; // 5 bitów
     const g = (this._green >> 2) & 0x3f; // 6 bitów
     const b = (this._blue >> 3) & 0x1f; // 5 bitów
-
-    // ZMIANA: Format BGR565
-    // Blue na najstarszych bitach (<< 11), Red na najmłodszych
     const value = (b << 11) | (g << 5) | r;
 
     return new Uint8Array([value & 0xff, value >> 8]);
   }
 
   get RGB8(): Uint8Array {
-    // Pobieramy wartości (bez zmian)
     const r = (this._red >> 5) & 0x07; // 3 bity
     const g = (this._green >> 5) & 0x07; // 3 bity
     const b = (this._blue >> 6) & 0x03; // 2 bity
-
-    // ZMIANA: Format BGR332 (BB GGG RRR)
-    // Blue (2 bity) idzie na samą górę (<< 6)
-    // Green (3 bity) zostaje w środku (<< 3)
-    // Red (3 bity) ląduje na dole (bez przesunięcia)
     return new Uint8Array([(b << 6) | (g << 3) | r]);
   }
 
@@ -108,6 +104,10 @@ export class CRGB {
     if (hex.length !== 3) throw new Error("Invalid hex color string");
 
     return new CRGB(...hex.map((c) => parseInt(c, 16)));
+  }
+
+  static multiply(color: CRGB, factor: number): CRGB {
+    return new CRGB(color.red * factor, color.green * factor, color.blue * factor);
   }
 
   static blend(a: CRGB, b: CRGB): CRGB {
