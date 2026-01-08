@@ -3,7 +3,7 @@ import { AnimatePresence, hover, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
-import EffectsIcons from "../../../assets/EffectsIcons/index.json";
+import EffectsIcons from "@assets/EffectsIcons.json";
 import { EffectType } from "@hooks/useAnimator/types/effects";
 
 export default function EffectTab() {

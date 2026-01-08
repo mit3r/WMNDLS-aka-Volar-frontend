@@ -1,0 +1,17 @@
+{
+  "once": {
+    "name": "Once",
+    "description": "Repeat one time",
+    "src": "/RepeatIcons/repeat_one_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "stop": {
+    "name": "Stop",
+    "description": "No repeat",
+    "src": "/RepeatIcons/stop_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  },
+  "forever": {
+    "name": "Forever",
+    "description": "Repeat indefinitely",
+    "src": "/RepeatIcons/repeat_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+  }
+}

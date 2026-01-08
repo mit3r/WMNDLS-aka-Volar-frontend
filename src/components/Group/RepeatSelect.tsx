@@ -1,4 +1,4 @@
-import RepeatIcons from "@assets/RepeatIcons/index.json";
+import RepeatIcons from "@assets/RepeatIcons.json";
 import { RepeatMode } from "@hooks/useAnimator/types/visuals";
 import { animeStore } from "@store/animeStore";
 import clsx from "clsx";

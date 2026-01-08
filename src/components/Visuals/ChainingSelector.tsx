@@ -1,4 +1,4 @@
-import ChainIcons from "@assets/ChainIcons/index.json";
+import ChainIcons from "@assets/ChainIcons.json";
 import { ChainingMode } from "@hooks/useAnimator/types/visuals";
 import { animeStore } from "@store/animeStore";
 import { AnimatePresence, motion } from "motion/react";

@@ -1,5 +1,12 @@
 # Volar - control panel
 
+## Development
+
+Install dependencies - `npm i`
+Run development server - `npm run dev`
+Build static site - `npm run build`
+Start static site - `npm run preview`
+
 ## Channel
 
 ### Color
