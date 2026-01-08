@@ -1,8 +1,8 @@
-import type { EffectType } from "@hooks/useAnimator/effects";
 import { AnimatePresence, hover, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import EffectsIcons from "@assets/EffectsIcons/index.json";
 import { twMerge } from "tailwind-merge";
+import type { EffectType } from "@hooks/useAnimator/types/effects";
 
 export default function EffectCard(props: { disabled?: boolean; effect: EffectType | null; onClick?: () => void }) {
   const ref = useRef<HTMLButtonElement>(null);

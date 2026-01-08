@@ -59,19 +59,19 @@ function blendModeOverlay(colors: CRGB[][]): CRGB[] {
   return blendedColors;
 }
 
-function blendModeMultiply(colors: CRGB[][]): CRGB[] {
-  const blendedColors: CRGB[] = CRGB.createArray(Pc.NUM_LEDS, new CRGB(255, 255, 255));
-  for (let ledIndex = 0; ledIndex < Pc.NUM_LEDS; ledIndex++) {
-    let r = 255;
-    let g = 255;
-    let b = 255;
-    for (let visualIndex = 0; visualIndex < colors.length; visualIndex++) {
-      r = (r * colors[visualIndex][ledIndex].r) / 255;
-      g = (g * colors[visualIndex][ledIndex].g) / 255;
-      b = (b * colors[visualIndex][ledIndex].b) / 255;
-    }
-    blendedColors[ledIndex] = new CRGB(r, g, b);
-  }
+// function blendModeMultiply(colors: CRGB[][]): CRGB[] {
+//   const blendedColors: CRGB[] = CRGB.createArray(Pc.NUM_LEDS, new CRGB(255, 255, 255));
+//   for (let ledIndex = 0; ledIndex < Pc.NUM_LEDS; ledIndex++) {
+//     let r = 255;
+//     let g = 255;
+//     let b = 255;
+//     for (let visualIndex = 0; visualIndex < colors.length; visualIndex++) {
+//       r = (r * colors[visualIndex][ledIndex].r) / 255;
+//       g = (g * colors[visualIndex][ledIndex].g) / 255;
+//       b = (b * colors[visualIndex][ledIndex].b) / 255;
+//     }
+//     blendedColors[ledIndex] = new CRGB(r, g, b);
+//   }
 
-  return blendedColors;
-}
+//   return blendedColors;
+// }
