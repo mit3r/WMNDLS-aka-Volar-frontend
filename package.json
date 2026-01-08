@@ -1,6 +1,7 @@
 {
   "name": "wmndls-frontend",
   "homepage": "./Volar/",
+  "packageManager": "npm@11.7.0",
   "private": true,
   "version": "0.0.0",
   "type": "module",
