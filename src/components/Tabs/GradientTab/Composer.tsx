@@ -4,6 +4,8 @@ import { AnimatePresence, motion, Reorder } from "motion/react";
 import { useStore } from "zustand";
 import { animeStore } from "@store/animeStore";
 import { useShallow } from "zustand/shallow";
+import { uiStore } from "@store/uiStore";
+import { PRESET_COLORS_HEX } from "@utils/colors";
 
 export default function Composer(props: { visualId: number }) {
   const gradient = useStore(
@@ -61,9 +63,20 @@ export default function Composer(props: { visualId: number }) {
 function StopComponent(props: { index: number; stop: Stop; canRemove?: boolean }) {
   const updateGradientStop = useStore(animeStore, (state) => state.updateGradientStop);
   const removeGradientStop = useStore(animeStore, (state) => state.removeGradientStop);
+  const recentColors = useStore(uiStore, (state) => state.recentColors);
+  const pushRecentColor = useStore(uiStore, (state) => state.pushRecentColor);
+
   const handleRemove = () => removeGradientStop(props.stop.id);
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    updateGradientStop(props.stop.id, CRGB.fromHexString(e.target.value));
+  const setStopColor = (hex: string) => {
+    try {
+      updateGradientStop(props.stop.id, CRGB.fromHexString(hex));
+      pushRecentColor(hex);
+    } catch {
+      // Ignore invalid color values to avoid crashing the UI.
+    }
+  };
+
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => setStopColor(e.target.value);
 
   return (
     <Reorder.Item
@@ -78,16 +91,54 @@ function StopComponent(props: { index: number; stop: Stop; canRemove?: boolean }
       dragElastic={0.1}
       style={{ gridRow: `${props.index + 1} / ${props.index + 2}` }}
     >
-      <input
-        className="aspect-square h-full"
-        type="color"
-        name=""
-        id=""
-        value={props.stop.color.toHexString()}
-        onChange={handleColorChange}
-      />
+      <div className="flex items-center gap-3">
+        <input
+          className="aspect-square h-10 w-10"
+          type="color"
+          value={props.stop.color.toHexString()}
+          onChange={handleColorChange}
+          onPointerDown={(e) => e.stopPropagation()}
+          aria-label="Pick color"
+        />
 
-      <span className="w-full px-4 text-white">{props.stop.color.toHexString()}</span>
+        <div className="flex flex-col gap-2">
+          <span className="select-text font-mono text-white">{props.stop.color.toHexString()}</span>
+
+          <div className="grid grid-cols-4 gap-2">
+            {PRESET_COLORS_HEX.map((hex) => (
+              <Swatch
+                key={hex}
+                hex={hex}
+                active={hex === props.stop.color.toHexString()}
+                onPick={setStopColor}
+                label="Preset color"
+              />
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-white/80">Recent</span>
+            <div className="grid grid-cols-4 gap-2">
+              {Array.from({ length: 4 }).map((_, i) => {
+                const hex = recentColors[i];
+                if (!hex) {
+                  return <div key={`recent-empty-${i}`} className="h-8 w-8 rounded-md border-2 border-white/20" />;
+                }
+
+                return (
+                  <Swatch
+                    key={`recent-${hex}`}
+                    hex={hex}
+                    active={hex === props.stop.color.toHexString()}
+                    onPick={setStopColor}
+                    label="Recent color"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <AnimatePresence initial={false}>
         {props.canRemove !== false && (
@@ -103,5 +154,30 @@ function StopComponent(props: { index: number; stop: Stop; canRemove?: boolean }
         )}
       </AnimatePresence>
     </Reorder.Item>
+  );
+}
+
+function Swatch(props: {
+  hex: string;
+  active: boolean;
+  onPick: (hex: string) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      className={
+        "h-8 w-8 rounded-md border-2 border-white focus:outline-none focus:ring-2 focus:ring-white " +
+        (props.active ? "ring-2 ring-white" : "")
+      }
+      style={{ backgroundColor: props.hex }}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        props.onPick(props.hex);
+      }}
+      aria-label={`${props.label}: ${props.hex}`}
+      title={props.hex}
+    />
   );
 }

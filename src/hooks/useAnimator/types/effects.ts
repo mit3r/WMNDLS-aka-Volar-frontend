@@ -1,11 +1,20 @@
 import { BreathingEffect } from "../effects/Breathing";
-import { ClimbingEffect } from "../effects/Climbing";
+import { ConfettiEffect } from "../effects/Confetti";
+import { FireEffect } from "../effects/Fire";
 import { FlashingEffect } from "../effects/Flashing";
+import { GlitterEffect } from "../effects/Glitter";
+import { LightningEffect } from "../effects/Lightning";
+import { LoadingEffect } from "../effects/Loading";
+import { MeteorEffect } from "../effects/Meteor";
+import { MusicEffect } from "../effects/Music";
 import { PulseEffect } from "../effects/Pulse";
+import { RainEffect } from "../effects/Rain";
 import { ShootingEffect } from "../effects/Shooting";
 import { SolidEffect } from "../effects/Solid";
+import { SparkleEffect } from "../effects/Sparkle";
 import { StrobeEffect } from "../effects/Strobe";
 import { TenisEffect } from "../effects/Tenis";
+import { TwinkleEffect } from "../effects/Twinkle";
 import { WaveEffect } from "../effects/Wave";
 
 export enum EffectType {
@@ -38,19 +47,19 @@ export const EFFECTS: Record<EffectType, Effect> = {
   [EffectType.Breathing]: BreathingEffect,
   [EffectType.Solid]: SolidEffect,
   [EffectType.Flashing]: FlashingEffect,
-  [EffectType.Loading]: ClimbingEffect,
+  [EffectType.Loading]: LoadingEffect,
   [EffectType.Shooting]: ShootingEffect,
   [EffectType.Tenis]: TenisEffect,
   [EffectType.Wave]: WaveEffect,
   [EffectType.Strobe]: StrobeEffect,
   [EffectType.Pulse]: PulseEffect, // TODO
-  [EffectType.Sparkle]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Confetti]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Glitter]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Twinkle]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Meteor]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Lightning]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Rain]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Fire]: { basePeriod: 1, get: () => 1 },
-  [EffectType.Music]: { basePeriod: 1, get: () => 1 },
+  [EffectType.Sparkle]: SparkleEffect,
+  [EffectType.Confetti]: ConfettiEffect,
+  [EffectType.Glitter]: GlitterEffect,
+  [EffectType.Twinkle]: TwinkleEffect,
+  [EffectType.Meteor]: MeteorEffect,
+  [EffectType.Lightning]: LightningEffect,
+  [EffectType.Rain]: RainEffect,
+  [EffectType.Fire]: FireEffect,
+  [EffectType.Music]: MusicEffect,
 };
