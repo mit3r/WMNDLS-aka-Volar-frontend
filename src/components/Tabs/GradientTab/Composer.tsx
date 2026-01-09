@@ -141,16 +141,20 @@ function StopComponent(props: { index: number; stop: Stop; canRemove?: boolean }
       </div>
 
       <AnimatePresence initial={false}>
-        {props.canRemove !== false && (
+        {props.canRemove !== false ? (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="rounded-2xl border-2 px-4 py-2 text-white"
+            className="grid h-10 w-10 place-items-center rounded-xl border-2 text-2xl leading-none text-white"
             onClick={handleRemove}
+            aria-label="Remove gradient stop"
+            title="Remove"
           >
-            Remove
+            ×
           </motion.button>
+        ) : (
+          <div className="h-10 w-10" />
         )}
       </AnimatePresence>
     </Reorder.Item>
