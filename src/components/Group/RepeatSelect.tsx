@@ -33,7 +33,7 @@ export default function RepeatSelect(props: { groupId: number }) {
               if (repeat === mode) handleClick(r ? r.offsetTop : 0);
             }}
           >
-            <img className="max-h-full max-w-full" src={value.src} alt="" />
+            <img className="max-h-full max-w-full" src={`${import.meta.env.BASE_URL}${value.src}`} alt="" />
           </div>
         );
       })}

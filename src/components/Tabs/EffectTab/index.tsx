@@ -66,7 +66,7 @@ function EffectCard(props: { selected: boolean; effect: EffectType; setEffectTyp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="h-full w-full brightness-25"
-            src={img}
+            src={`${import.meta.env.BASE_URL}${img}`}
             alt={description}
           />
         )}

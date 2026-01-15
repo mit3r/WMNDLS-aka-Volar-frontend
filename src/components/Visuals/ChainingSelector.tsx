@@ -73,7 +73,7 @@ export default function ChainingSelector(props: { groupId: number; visualId: num
           className="col-start-1 col-end-1 row-start-1 row-end-1 grid w-full origin-bottom place-items-center p-4 font-mono text-2xl font-bold text-black"
         >
           {chaining !== undefined && chaining !== ChainingMode.length && (
-            <img className="brightness-25" src={ChainIcons[chaining].src} />
+            <img className="brightness-25" src={`${import.meta.env.BASE_URL}${ChainIcons[chaining].src}`} />
           )}
         </motion.div>
       </AnimatePresence>

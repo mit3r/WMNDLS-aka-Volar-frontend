@@ -1,6 +1,6 @@
 import { create } from "zustand/react";
 
-export const tabs = ["control", "color", "effect", "address"] as const;
+export const tabs = ["control", "color", "effect"] as const;
 export type Tab = (typeof tabs)[number];
 
 interface UIStore {

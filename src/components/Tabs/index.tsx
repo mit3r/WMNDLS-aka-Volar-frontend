@@ -6,7 +6,6 @@ import { useStore } from "zustand";
 import ControlTab from "./ControlTab";
 import EffectTab from "./EffectTab";
 import GradientTab from "./GradientTab";
-import TabAddress from "./AddressTab";
 
 export default function TabsComponent() {
   const tab = useStore(uiStore, (state) => state.tab);
@@ -20,8 +19,6 @@ export default function TabsComponent() {
         return <GradientTab />;
       case "effect":
         return <EffectTab />;
-      case "address":
-        return <TabAddress />;
       default:
         return null;
     }
@@ -61,12 +58,12 @@ function TabsRadio(props: { tab: Tab; onChange: (tab: Tab) => void }) {
   }, [handleKeyboard]);
 
   return (
-    <div className="grid h-full grid-flow-col-dense grid-cols-4 gap-4">
+    <div className="flex h-full gap-4">
       {tabs.map((tab) => (
         <button
           key={tab}
           onClick={() => props.onChange(tab)}
-          className={clsx("corner-bevel rounded-tl-lg rounded-br-lg p-2 outline-0", {
+          className={clsx("corner-bevel flex-1 basis-0 rounded-tl-lg rounded-br-lg p-2 outline-0 transition-colors", {
             "bg-slate-600 text-white": props.tab !== tab,
             "bg-slate-300 text-black": props.tab === tab,
           })}

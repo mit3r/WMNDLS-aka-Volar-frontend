@@ -45,7 +45,7 @@ export default function EffectCard(props: { disabled?: boolean; effect: EffectTy
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               className="h-full w-full brightness-25"
-              src={EffectsIcons[props.effect].img}
+              src={`${import.meta.env.BASE_URL}${EffectsIcons[props.effect].img}`}
               alt={EffectsIcons[props.effect].description}
             />
           )

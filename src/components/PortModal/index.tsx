@@ -1,6 +1,6 @@
 import { transmitter } from "@api/Transmitter";
 import { AnimatePresence, motion } from "motion/react";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 export default function PortModal() {
   const [error, setError] = useState<string | null>(null);
@@ -15,9 +15,13 @@ export default function PortModal() {
   const handleChoosePort = async () =>
     transmitter.connectWithPicker().catch(() => setError("Failed to connect to chosen transmitter port"));
 
-  if (status === "connected") {
-    return null;
-  }
+  const reconnectBtn = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (reconnectBtn.current) reconnectBtn.current.focus();
+  }, [status]);
+
+  if (status === "connected") return null;
 
   return (
     <AnimatePresence>
@@ -25,9 +29,9 @@ export default function PortModal() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute z-10 w-svw h-svh grid place-items-center top-0 left-0 backdrop-blur-xs backdrop-brightness-75"
+        className="absolute top-0 left-0 z-10 grid h-svh w-svw place-items-center backdrop-blur-xs backdrop-brightness-75"
       >
-        <div className="flex flex-col items-center gap-4 p-7 rounded-2xl bg-gray-400">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gray-400 p-7">
           <h1 className="text-xl">Please connect your transmitter port.</h1>
 
           {last && (
@@ -37,16 +41,17 @@ export default function PortModal() {
           )}
 
           {last ? (
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex w-full flex-col gap-2">
               <button
+                ref={reconnectBtn}
                 onClick={handleReconnectLast}
-                className="px-4 py-2 rounded-2xl bg-blue-950 text-xl text-white cursor-pointer hover:scale-105 hover:bg-blue-900 transition-all active:scale-95"
+                className="cursor-pointer rounded-2xl bg-blue-950 px-4 py-2 text-xl text-white transition-all hover:scale-105 hover:bg-blue-900 active:scale-95"
               >
                 Reconnect last
               </button>
               <button
                 onClick={handleChoosePort}
-                className="px-4 py-2 rounded-2xl bg-gray-800 text-xl text-white cursor-pointer hover:scale-105 transition-all active:scale-95"
+                className="cursor-pointer rounded-2xl bg-gray-800 px-4 py-2 text-xl text-white transition-all hover:scale-105 active:scale-95"
               >
                 Connect (choose port)
               </button>
@@ -54,7 +59,7 @@ export default function PortModal() {
           ) : (
             <button
               onClick={handleChoosePort}
-              className="px-4 py-2 rounded-2xl bg-blue-950 text-2xl text-white cursor-pointer hover:scale-105 hover:bg-blue-900 transition-all active:scale-95"
+              className="cursor-pointer rounded-2xl bg-blue-950 px-4 py-2 text-2xl text-white transition-all hover:scale-105 hover:bg-blue-900 active:scale-95"
             >
               Connect
             </button>
