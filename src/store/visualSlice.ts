@@ -25,8 +25,6 @@ export interface VisualSlice {
   setVisualEffect: (effect: Visual["effect"]) => void;
 }
 
-let visualIndexer = 1;
-
 export const visualSlice: StateCreator<AnimeStore, [], [], VisualSlice> = (set, get) => ({
   editableVisualId: null,
   setEditableVisualId: (visualId) => set({ editableVisualId: visualId }),
@@ -50,7 +48,11 @@ export const visualSlice: StateCreator<AnimeStore, [], [], VisualSlice> = (set, 
       produce((state: AnimeStore) => {
         const groupId = state.groups.findIndex((g) => g.id === state.editableGroupId);
         if (groupId === -1) throw new Error("No group found to add visual to");
-        const newVisualId = visualIndexer++;
+        const maxVisualId = state.groups.reduce((max, group) => {
+          const localMax = group.visuals.reduce((m, v) => Math.max(m, v.id), 0);
+          return Math.max(max, localMax);
+        }, 0);
+        const newVisualId = maxVisualId + 1;
 
         state.groups[groupId].visuals.push({
           id: newVisualId,
