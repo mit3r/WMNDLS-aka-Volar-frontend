@@ -6,6 +6,7 @@ import { animate } from "motion";
 import { motion, useMotionValue } from "motion/react";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
+import { publicAsset } from "@utils/publicAsset";
 
 export default function RepeatSelect(props: { groupId: number }) {
   const repeat = useStore(animeStore, (state) => state.groups.find((g) => g.id === props.groupId)?.mode);
@@ -33,7 +34,7 @@ export default function RepeatSelect(props: { groupId: number }) {
               if (repeat === mode) handleClick(r ? r.offsetTop : 0);
             }}
           >
-            <img className="max-h-full max-w-full" src={value.src} alt="" />
+            <img className="max-h-full max-w-full" src={publicAsset(value.src)} alt="" />
           </div>
         );
       })}

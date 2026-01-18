@@ -11,5 +11,5 @@ export default function DurationInput(props: { groupId: number; visualId: number
     return visual?.duration || 0;
   });
 
-  return <NumberInput title="DURATION" value={duration} onChange={setVisualDuration} />;
+  return <NumberInput title="TIME" value={duration} onChange={setVisualDuration} />;
 }

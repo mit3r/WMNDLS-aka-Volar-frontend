@@ -6,6 +6,7 @@ import { useStore } from "zustand";
 import EffectsIcons from "@assets/EffectsIcons.json";
 import { EffectType } from "@hooks/useAnimator/types/effects";
 import { useSyncExternalStore } from "react";
+import { publicAsset } from "@utils/publicAsset";
 import {
   disableMicrophoneAnalyzer,
   enableMicrophoneAnalyzer,
@@ -110,7 +111,7 @@ function EffectCard(props: { selected: boolean; effect: EffectType; setEffectTyp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="h-full w-full brightness-25"
-            src={img}
+              src={publicAsset(img)}
             alt={description}
           />
         )}

@@ -13,10 +13,7 @@ export default function useAnimator() {
   const { status } = useTransmitter();
 
   const options = useStore(optionsStore, (state) => state.options);
-  const millis = useMemo(
-    () => 1000 / MAX_FPS_LIMIT[options.rgbFormat][options.multicastChannelsNum],
-    [options.rgbFormat, options.multicastChannelsNum],
-  );
+  const millis = useMemo(() => 1000 / MAX_FPS_LIMIT[options.rgbFormat], [options.rgbFormat]);
 
   const groups = useStore(
     animeStore,

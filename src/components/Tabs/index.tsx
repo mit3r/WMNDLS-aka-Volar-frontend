@@ -66,12 +66,14 @@ function TabsRadio(props: { tab: Tab; onChange: (tab: Tab) => void }) {
         <button
           key={tab}
           onClick={() => props.onChange(tab)}
-          className={clsx("corner-bevel rounded-tl-lg rounded-br-lg p-2 outline-0", {
+          className={clsx("corner-bevel grid min-w-0 place-items-center overflow-hidden rounded-tl-lg rounded-br-lg px-1 py-2 outline-0", {
             "bg-slate-600 text-white": props.tab !== tab,
             "bg-slate-300 text-black": props.tab === tab,
           })}
         >
-          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          <span className="w-full overflow-hidden text-center text-sm font-semibold text-ellipsis whitespace-nowrap leading-none">
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </span>
         </button>
       ))}
     </div>
