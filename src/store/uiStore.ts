@@ -1,7 +1,7 @@
 import { create } from "zustand/react";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export const tabs = ["control", "color", "effect", "address"] as const;
+export const tabs = ["control", "color", "effect"] as const;
 export type Tab = (typeof tabs)[number];
 
 interface UIStore {
