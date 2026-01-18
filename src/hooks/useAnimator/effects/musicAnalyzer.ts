@@ -154,6 +154,8 @@ export function getMusicSpectrumValue(ledOffset: number): number {
   const raw = frequencyData[Math.max(0, Math.min(frequencyData.length - 1, bin))] / 255;
 
   // Simple noise gate + gentle curve
-  const gated = Math.max(0, raw - 0.05) / 0.95;
-  return clamp01(Math.pow(gated, 1.35));
+  // Tuned to be a bit less sensitive: at the same volume as before, LEDs should glow less.
+  const noiseGate = 0.08; // was 0.05
+  const gated = Math.max(0, raw - noiseGate) / (1 - noiseGate);
+  return clamp01(Math.pow(gated, 1.55));
 }
