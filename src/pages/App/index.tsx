@@ -9,15 +9,15 @@ export default function App() {
 
   return (
     <div className="flex h-svh w-svw overflow-clip">
-      <PortModal />
-
-      <div className="flex-1 overflow-x-auto bg-gray-700">
+      <div className="z-0 flex-1 overflow-x-auto bg-gray-700">
         <GroupsComponent />
       </div>
 
-      <div className="h-full w-[26vw] min-w-[20rem] max-w-[32rem] shrink-0 border-l-2 border-gray-500 bg-gray-800">
+      <div className="h-full w-[26vw] min-w-[20rem] shrink-0 border-l-2 border-gray-500 bg-gray-800">
         <TabsComponent />
       </div>
+
+      <PortModal />
     </div>
   );
 }

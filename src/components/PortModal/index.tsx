@@ -5,6 +5,10 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 export default function PortModal() {
   const [error, setError] = useState<string | null>(null);
 
+  const [rejected, setRejected] = useState<boolean>(false);
+  const handleReject = () => setRejected(true);
+  const handleUnreject = () => setRejected(false);
+
   const last = transmitter.getLastPortInfo();
 
   const status = useSyncExternalStore(transmitter.subscribe.bind(transmitter), transmitter.getStatus.bind(transmitter));
@@ -22,6 +26,7 @@ export default function PortModal() {
   }, [status]);
 
   if (status === "connected") return null;
+  if (rejected) return <ConnectionRejected onUnreject={handleUnreject} />;
 
   return (
     <AnimatePresence>
@@ -66,8 +71,23 @@ export default function PortModal() {
           )}
 
           {error && <p className="text-red-600">{error}</p>}
+
+          <div onClick={handleReject} className="cursor-pointer text-black/50 hover:text-black">
+            Close
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+function ConnectionRejected(props: { onUnreject: () => void }) {
+  return (
+    <div className="absolute bottom-0 overflow-clip rounded-tr-2xl bg-gray-700/50 p-2 text-center text-white/80 select-none">
+      <small className="pointer-events-none">Transmitter port disconnected: </small>
+      <small className="cursor-pointer transition-colors hover:text-gray-400" onClick={props.onUnreject}>
+        Click to reconnect.
+      </small>
+    </div>
   );
 }

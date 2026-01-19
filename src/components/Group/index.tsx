@@ -29,7 +29,9 @@ export default function GroupsComponent() {
         <GroupComponent key={groupId} groupId={groupId} />
       ))}
 
-      <button onClick={addGroup}>Add Group</button>
+      <button className="cursor-pointer text-white" onClick={addGroup}>
+        Add Group
+      </button>
     </Reorder.Group>
   );
 }
@@ -44,7 +46,7 @@ function GroupComponent(props: { groupId: number }) {
       drag="y"
       value={props.groupId}
       key={props.groupId}
-      className="relative grid h-[40svh] shrink-0 grid-cols-[auto_1fr] grid-rows-1 gap-4 overflow-clip rounded-tl-4xl rounded-br-4xl bg-gray-800 p-4 text-white shadow-sm shadow-black"
+      className="relative grid h-[40svh] shrink-0 cursor-grab grid-cols-[auto_1fr] grid-rows-1 gap-4 overflow-clip rounded-tl-4xl rounded-br-4xl bg-gray-800 p-4 text-white shadow-sm shadow-black"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
