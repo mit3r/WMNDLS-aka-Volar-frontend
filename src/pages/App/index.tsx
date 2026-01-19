@@ -15,8 +15,7 @@ export default function App() {
         <GroupsComponent />
       </div>
 
-      {/* w-[30vw] */}
-      <div className="h-full w-80 border-l-2 border-gray-500 bg-gray-800">
+      <div className="h-full w-[26vw] min-w-[20rem] max-w-[32rem] shrink-0 border-l-2 border-gray-500 bg-gray-800">
         <TabsComponent />
       </div>
     </div>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import EffectsIcons from "@assets/EffectsIcons.json";
 import { twMerge } from "tailwind-merge";
 import type { EffectType } from "@hooks/useAnimator/types/effects";
+import { publicAsset } from "@utils/publicAsset";
 
 export default function EffectCard(props: { disabled?: boolean; effect: EffectType | null; onClick?: () => void }) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -45,7 +46,7 @@ export default function EffectCard(props: { disabled?: boolean; effect: EffectTy
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               className="h-full w-full brightness-25"
-              src={`${import.meta.env.BASE_URL}${EffectsIcons[props.effect].img}`}
+              src={publicAsset(EffectsIcons[props.effect].img)}
               alt={EffectsIcons[props.effect].description}
             />
           )

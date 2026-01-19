@@ -58,17 +58,22 @@ function TabsRadio(props: { tab: Tab; onChange: (tab: Tab) => void }) {
   }, [handleKeyboard]);
 
   return (
-    <div className="flex h-full gap-4">
+    <div className="grid grid-cols-3 gap-4">
       {tabs.map((tab) => (
         <button
           key={tab}
           onClick={() => props.onChange(tab)}
-          className={clsx("corner-bevel flex-1 basis-0 rounded-tl-lg rounded-br-lg p-2 outline-0 transition-colors", {
-            "bg-slate-600 text-white": props.tab !== tab,
-            "bg-slate-300 text-black": props.tab === tab,
-          })}
+          className={clsx(
+            "corner-bevel grid h-12 w-full min-w-0 place-items-center rounded-tl-lg rounded-br-lg px-2 py-2 outline-0",
+            {
+              "bg-slate-600 text-white": props.tab !== tab,
+              "bg-slate-300 text-black": props.tab === tab,
+            },
+          )}
         >
-          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          <span className="w-full text-center text-base font-semibold leading-none">
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </span>
         </button>
       ))}
     </div>

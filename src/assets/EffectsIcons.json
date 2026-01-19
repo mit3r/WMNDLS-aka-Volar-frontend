@@ -22,7 +22,7 @@
   "Shooting": {
     "name": "Shooting",
     "description": "Shooting description",
-    "img": "/EffectsIcons/stars_2_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
+    "img": "/EffectsIcons/shooting_star.svg"
   },
   "Tenis": {
     "name": "Tenis",
@@ -47,7 +47,7 @@
   "Sparkle": {
     "name": "Sparkle",
     "description": "Sparkle description",
-    "img": "/EffectsIcons/Sparkle.svg"
+    "img": "/EffectsIcons/stars_2_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
   },
   "Confetti": {
     "name": "Confetti",
@@ -67,7 +67,7 @@
   "Meteor": {
     "name": "Meteor",
     "description": "Meteor description",
-    "img": "/EffectsIcons/Meteor.svg"
+    "img": "/EffectsIcons/dangerous_60dp_CCCCCC_FILL0_wght400_GRAD0_opsz48.svg"
   },
   "Lightning": {
     "name": "Lightning",

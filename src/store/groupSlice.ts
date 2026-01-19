@@ -27,15 +27,13 @@ export interface GroupSlice {
   setGroupDelay: (groupId: GroupId, delay: number) => void;
 }
 
-let groupIndexer = 1;
-
 export const groupSlice: StateCreator<AnimeStore, [], [], GroupSlice> = (set, get) => ({
   groups: [],
 
   addGroup: () =>
     set(
       produce((state: AnimeStore) => {
-        const groupId = groupIndexer++;
+        const groupId = state.groups.length > 0 ? Math.max(...state.groups.map((g) => g.id)) + 1 : 1;
 
         state.groups.push({
           id: groupId,
